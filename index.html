@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Qur’an Reflection Finder</title>
+  <title>Qur’an Buddy</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -65,14 +65,14 @@
       background: #1a1a1a;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 0 20px rgba(252, 211, 77, 0.15);
+      box-shadow: 0 0 20px rgba(252, 211, 77, 0.1);
       border: 1px solid #333;
       transition: transform 0.3s ease;
     }
 
     .ayah-box:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 0 25px rgba(252, 211, 77, 0.35);
+      transform: translateY(-3px);
+      box-shadow: 0 0 25px rgba(252, 211, 77, 0.25);
     }
 
     .ayah {
@@ -87,16 +87,34 @@
       font-size: 0.9rem;
       color: #999;
     }
+
+    .comfort-box {
+      width: 100%;
+      background-color: #1c1c1c;
+      border-left: 4px solid #fcd34d;
+      color: #fcd34d;
+      font-style: italic;
+      padding: 16px;
+      border-radius: 10px;
+      margin-top: 10px;
+      box-shadow: 0 0 10px rgba(252, 211, 77, 0.15);
+      transition: transform 0.3s ease;
+    }
+
+    .comfort-box:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(252, 211, 77, 0.25);
+    }
   </style>
 </head>
 <body>
 
-  <h1>Qur’an Reflection Finder</h1>
+  <h1>With the Quran</h1>
   <p>Write your thoughts below and discover relevant ayahs with reflection.</p>
 
   <textarea id="entry" rows="6" placeholder="Write your journal entry here..."></textarea>
   <br/>
-  <button onclick="submitEntry()">🔍 Find Ayahs</button>
+  <button onclick="submitEntry()"> Enter</button>
 
   <div id="results"></div>
 
@@ -104,6 +122,9 @@
     async function submitEntry() {
       const entry = document.getElementById("entry").value.trim();
       if (!entry) return;
+
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "<p style='color:#999;'>🔄 Reflecting deeply…</p>";
 
       try {
         const response = await fetch("http://localhost:8000/match-ayahs", {
@@ -113,9 +134,9 @@
         });
 
         const data = await response.json();
-        const resultsDiv = document.getElementById("results");
         resultsDiv.innerHTML = "";
 
+        // Add ayahs first
         data.matches.forEach(match => {
           const box = document.createElement("div");
           box.className = "ayah-box";
@@ -127,9 +148,22 @@
 
           resultsDiv.appendChild(box);
         });
+
+        // Add comforting message at the end
+        // Add comforting message at the end
+const comfortBox = document.createElement("div");
+comfortBox.className = "comfort-box";
+comfortBox.innerHTML = `
+  <strong>🌿 Gentle Reminder</strong><br>
+  ${data.comfort}
+`;
+resultsDiv.appendChild(comfortBox);
+
+
       } catch (err) {
         console.error("Fetch error:", err);
         alert("Couldn’t fetch results. Check backend or connection.");
+        resultsDiv.innerHTML = "";
       }
     }
   </script>
