@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Qur’an Reflection Finder</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f0f0f;
+      color: #f5f5f5;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    h1 {
+      color: #fcd34d;
+      text-shadow: 0 0 8px rgba(252, 211, 77, 0.3);
+      font-weight: 500;
+    }
+
+    p {
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      background-color: #1a1a1a;
+      border: 1px solid #333;
+      color: #fff;
+      border-radius: 6px;
+      resize: vertical;
+      margin-bottom: 10px;
+    }
+
+    button {
+      background-color: #fcd34d;
+      color: #000;
+      padding: 10px 24px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out;
+      font-weight: 500;
+    }
+
+    button:hover {
+      background-color: #ffe066;
+    }
+
+    #results {
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .ayah-box {
+      width: 100%;
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(252, 211, 77, 0.15);
+      border: 1px solid #333;
+      transition: transform 0.3s ease;
+    }
+
+    .ayah-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 25px rgba(252, 211, 77, 0.35);
+    }
+
+    .ayah {
+      font-style: italic;
+      font-size: 1.1rem;
+      color: #e0e0e0;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.08);
+    }
+
+    .surah {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Qur’an Reflection Finder</h1>
+  <p>Write your thoughts below and discover relevant ayahs with reflection.</p>
+
+  <textarea id="entry" rows="6" placeholder="Write your journal entry here..."></textarea>
+  <br/>
+  <button onclick="submitEntry()">🔍 Find Ayahs</button>
+
+  <div id="results"></div>
+
+  <script>
+    async function submitEntry() {
+      const entry = document.getElementById("entry").value.trim();
+      if (!entry) return;
+
+      try {
+        const response = await fetch("http://localhost:8000/match-ayahs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ entry: entry, top_n: 3 })
+        });
+
+        const data = await response.json();
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = "";
+
+        data.matches.forEach(match => {
+          const box = document.createElement("div");
+          box.className = "ayah-box";
+
+          box.innerHTML = `
+            <div class="ayah">"${match.ayah}"</div>
+            <div class="surah">— Surah ${match.surah}, Ayah ${match.ayah_no}</div>
+          `;
+
+          resultsDiv.appendChild(box);
+        });
+      } catch (err) {
+        console.error("Fetch error:", err);
+        alert("Couldn’t fetch results. Check backend or connection.");
+      }
+    }
+  </script>
+
+</body>
+</html>

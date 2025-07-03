@@ -1,24 +1,33 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 import pandas as pd
 from sentence_transformers import SentenceTransformer, util
 
-# Load the CSV and model once
+# 🔸 Create the FastAPI app first
+app = FastAPI()
+
+# 🔸 Add CORS middleware immediately after defining app
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # You can limit to ["http://127.0.0.1:5500"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# 🔸 Load data and model
 df = pd.read_csv("quran_emotion_tagged.csv")
 ayahs = df['ayah_en'].astype(str).tolist()
 model = SentenceTransformer('all-MiniLM-L6-v2')
 ayah_embeddings = model.encode(ayahs, convert_to_tensor=True)
 
-# FastAPI app
-app = FastAPI()
-
-# Request schema
+# 🔸 Pydantic models
 class EntryRequest(BaseModel):
     entry: str
-    top_n: int = 5
+    top_n: int = 3
 
-# Response schema
 class AyahMatch(BaseModel):
     surah: str
     ayah_no: int
@@ -27,7 +36,7 @@ class AyahMatch(BaseModel):
 class MatchResponse(BaseModel):
     matches: List[AyahMatch]
 
-# Route
+# 🔸 Route
 @app.post("/match-ayahs", response_model=MatchResponse)
 def match_ayahs(request: EntryRequest):
     entry_embedding = model.encode(request.entry, convert_to_tensor=True)
