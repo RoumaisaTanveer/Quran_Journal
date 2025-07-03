@@ -16,16 +16,11 @@
 
     h1 {
       color: #fcd34d;
-      text-shadow: 0 0 8px rgba(252, 211, 77, 0.3);
       font-weight: 500;
+      text-shadow: 0 0 8px rgba(252, 211, 77, 0.3);
     }
 
-    p {
-      color: #aaa;
-      margin-bottom: 20px;
-    }
-
-    textarea {
+    textarea, input {
       width: 100%;
       padding: 12px;
       font-size: 1rem;
@@ -33,24 +28,18 @@
       border: 1px solid #333;
       color: #fff;
       border-radius: 6px;
-      resize: vertical;
       margin-bottom: 10px;
     }
 
     button {
       background-color: #fcd34d;
       color: #000;
-      padding: 10px 24px;
+      padding: 10px 20px;
       font-size: 1rem;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      transition: background 0.2s ease-in-out;
-      font-weight: 500;
-    }
-
-    button:hover {
-      background-color: #ffe066;
+      margin-top: 5px;
     }
 
     #results {
@@ -60,26 +49,17 @@
       gap: 20px;
     }
 
-    .ayah-box {
-      width: 100%;
+    .ayah-box, .comfort-box, .emotion-box {
       background: #1a1a1a;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 0 20px rgba(252, 211, 77, 0.1);
       border: 1px solid #333;
-      transition: transform 0.3s ease;
-    }
-
-    .ayah-box:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 0 25px rgba(252, 211, 77, 0.25);
     }
 
     .ayah {
       font-style: italic;
       font-size: 1.1rem;
       color: #e0e0e0;
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.08);
     }
 
     .surah {
@@ -89,36 +69,50 @@
     }
 
     .comfort-box {
-      width: 100%;
-      background-color: #1c1c1c;
       border-left: 4px solid #fcd34d;
       color: #fcd34d;
       font-style: italic;
-      padding: 16px;
-      border-radius: 10px;
-      margin-top: 10px;
-      box-shadow: 0 0 10px rgba(252, 211, 77, 0.15);
-      transition: transform 0.3s ease;
     }
 
-    .comfort-box:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 20px rgba(252, 211, 77, 0.25);
+    .emotion-box {
+      margin-top: 20px;
+      background-color: #1c1c1c;
+      padding: 16px;
+      border-radius: 10px;
+      color: #ccc;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .history-link {
+      color: #fcd34d;
+      text-decoration: none;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-  <h1>With the Quran</h1>
+  <div class="top-bar">
+    <h1>With the Qur’an</h1>
+    <a href="history.html" class="history-link">🕊️ Journal History</a>
+  </div>
+
   <p>Write your thoughts below and discover relevant ayahs with reflection.</p>
 
   <textarea id="entry" rows="6" placeholder="Write your journal entry here..."></textarea>
-  <br/>
-  <button onclick="submitEntry()"> Enter</button>
+  <button onclick="submitEntry()">Enter</button>
 
   <div id="results"></div>
 
   <script>
+    let currentEntryId = null;
+
     async function submitEntry() {
       const entry = document.getElementById("entry").value.trim();
       if (!entry) return;
@@ -130,40 +124,67 @@
         const response = await fetch("http://localhost:8000/match-ayahs", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ entry: entry, top_n: 3 })
+          body: JSON.stringify({ entry, top_n: 3 })
         });
 
         const data = await response.json();
         resultsDiv.innerHTML = "";
 
-        // Add ayahs first
+        // Display ayahs
         data.matches.forEach(match => {
           const box = document.createElement("div");
           box.className = "ayah-box";
-
           box.innerHTML = `
             <div class="ayah">"${match.ayah}"</div>
             <div class="surah">— Surah ${match.surah}, Ayah ${match.ayah_no}</div>
           `;
-
           resultsDiv.appendChild(box);
         });
 
-        // Add comforting message at the end
-        // Add comforting message at the end
-const comfortBox = document.createElement("div");
-comfortBox.className = "comfort-box";
-comfortBox.innerHTML = `
-  <strong>🌿 Gentle Reminder</strong><br>
-  ${data.comfort}
-`;
-resultsDiv.appendChild(comfortBox);
+        // Display comfort
+        const comfortBox = document.createElement("div");
+        comfortBox.className = "comfort-box";
+        comfortBox.innerHTML = `<strong>🌿 Gentle Reminder</strong><br>${data.comfort}`;
+        resultsDiv.appendChild(comfortBox);
 
+        // Emotion input box
+        const emotionBox = document.createElement("div");
+        emotionBox.className = "emotion-box";
+        emotionBox.innerHTML = `
+          <p>💭 Detected emotion: <strong>${data.emotion_before}</strong></p>
+          <label for="emotionInput">How do you feel now?</label><br/>
+          <input type="text" id="emotionInput" placeholder="Type how you feel...">
+          <button onclick="submitAfterEmotion(${data.entry_id})">Save Feeling</button>
+        `;
+        resultsDiv.appendChild(emotionBox);
+
+        // Clear journal input
+        document.getElementById("entry").value = "";
+
+        currentEntryId = data.entry_id;
 
       } catch (err) {
         console.error("Fetch error:", err);
-        alert("Couldn’t fetch results. Check backend or connection.");
-        resultsDiv.innerHTML = "";
+        alert("Couldn't fetch results. Check backend or connection.");
+      }
+    }
+
+    async function submitAfterEmotion(entryId) {
+      const emotion = document.getElementById("emotionInput").value.trim();
+      if (!emotion) return;
+
+      try {
+        await fetch("http://localhost:8000/update-emotion", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ entry_id: entryId, emotion_after: emotion })
+        });
+
+        // Clear emotion input box
+        document.getElementById("emotionInput").value = "";
+
+      } catch (err) {
+        console.error("Error saving emotion:", err);
       }
     }
   </script>

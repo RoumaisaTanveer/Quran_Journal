@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Journal History</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f0f0f;
+      color: #f5f5f5;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    h1 {
+      color: #fcd34d;
+      font-weight: 500;
+      text-shadow: 0 0 8px rgba(252, 211, 77, 0.3);
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .history-item {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #333;
+      margin-bottom: 15px;
+    }
+
+    .entry {
+      color: #ccc;
+    }
+
+    .emotions {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    a.back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #fcd34d;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="index.html" class="back-link">⬅Back to Journal</a>
+  <h1>🕊️ Your Journal History</h1>
+
+  <div id="history-list"></div>
+
+  <script>
+    async function fetchHistory() {
+      try {
+        const res = await fetch("http://localhost:8000/history");
+        const history = await res.json();
+        const historyDiv = document.getElementById("history-list");
+        historyDiv.innerHTML = "";
+
+        history.slice().reverse().forEach(item => {
+          const box = document.createElement("div");
+          box.className = "history-item";
+
+          box.innerHTML = `
+            <div class="entry"><strong>📝 Entry:</strong><br> ${item.entry}</div>
+            <div class="emotions">
+              <strong>Before:</strong> ${item.emotion_before} |
+              <strong>After:</strong> ${item.emotion_after || "—"}
+            </div>
+          `;
+          historyDiv.appendChild(box);
+        });
+      } catch (err) {
+        console.error("Error loading history:", err);
+      }
+    }
+
+    window.onload = fetchHistory;
+  </script>
+
+</body>
+</html>
