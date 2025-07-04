@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <title>Journal History</title>
+  <!-- Font Awesome 6 CSS CDN -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -11,6 +18,7 @@
       padding: 20px;
       max-width: 700px;
       margin: auto;
+      position: relative;
     }
 
     h1 {
@@ -27,16 +35,102 @@
       border-radius: 12px;
       border: 1px solid #333;
       margin-bottom: 15px;
+      position: relative;
     }
 
     .entry {
       color: #ccc;
+      white-space: pre-wrap; /* preserve new lines */
     }
 
     .emotions {
       margin-top: 10px;
       font-size: 0.9rem;
-      color: #aaa;
+    }
+
+    .emotion-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      margin: 2px;
+      color: #000;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .green { background-color: #22c55e; }
+    .yellow { background-color: #facc15; }
+    .red { background-color: #ef4444; }
+
+    /* Trash icon button */
+    .delete-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #ef4444;
+      font-size: 16px;
+      line-height: 1;
+      padding: 0;
+      transition: color 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .delete-btn:hover {
+      color: #f87171;
+    }
+
+    /* Modal Overlay */
+    #modalOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0,0,0,0.6);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Modal Box */
+    #modalBox {
+      background-color: #1a1a1a;
+      border-radius: 12px;
+      padding: 25px 30px;
+      max-width: 320px;
+      color: #f5f5f5;
+      box-shadow: 0 0 20px rgba(214, 213, 211, 0.3);
+      text-align: center;
+    }
+
+    #modalBox p {
+      margin-bottom: 20px;
+      font-size: 1.1rem;
+    }
+
+    #modalBox button {
+      background-color: #fcd34d;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 0 10px;
+      min-width: 80px;
+      transition: background-color 0.3s ease;
+    }
+
+    #modalBox button.cancel {
+      background-color: #ef4444;
+      color: white;
+    }
+
+    #modalBox button:hover {
+      filter: brightness(0.9);
     }
 
     a.back-link {
@@ -50,36 +144,116 @@
 </head>
 <body>
 
-  <a href="index.html" class="back-link">⬅Back to Journal</a>
+  <a href="index.html" class="back-link">⬅ Back to Journal</a>
   <h1>🕊️ Your Journal History</h1>
 
   <div id="history-list"></div>
 
+  <!-- Modal -->
+  <div id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div id="modalBox">
+      <p id="modalDesc">Delete this journal entry?</p>
+      <button id="confirmDelete" aria-label="Confirm delete entry">Yes</button>
+      <button id="cancelDelete" class="cancel" aria-label="Cancel delete entry">No</button>
+    </div>
+  </div>
+
   <script>
+    let entryToDelete = null;
+
+    // Map emotions to colors, normalize input
+    function emotionColor(emotionRaw) {
+      if (!emotionRaw) return '';
+      const emotion = emotionRaw.toLowerCase().trim();
+      const green = ['peaceful', 'happy', 'reflective'];
+      const yellow = ['grateful', 'hopeful', 'content'];
+      const red = ['sad', 'anxious', 'angry', 'stressed', 'lonely', 'heartbroken', 'tired', 'confused'];
+
+      if (green.includes(emotion)) return 'green';
+      if (yellow.includes(emotion)) return 'yellow';
+      if (red.includes(emotion)) return 'red';
+      return '';
+    }
+
     async function fetchHistory() {
       try {
         const res = await fetch("http://localhost:8000/history");
+        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
         const history = await res.json();
         const historyDiv = document.getElementById("history-list");
         historyDiv.innerHTML = "";
 
-        history.slice().reverse().forEach(item => {
+        // Show newest first
+        history.slice().reverse().forEach((item, i) => {
+          const entryId = history.length - 1 - i;
+
           const box = document.createElement("div");
           box.className = "history-item";
 
+          const beforeColor = emotionColor(item.emotion_before);
+          const afterColor = emotionColor(item.emotion_after);
+
+          const afterSpan = (item.emotion_after && item.emotion_after.trim() !== "")
+            ? `<span class="emotion-tag ${afterColor || 'yellow'}">${item.emotion_after}</span>`
+            : `<span class="emotion-tag yellow">—</span>`;
+
           box.innerHTML = `
-            <div class="entry"><strong>📝 Entry:</strong><br> ${item.entry}</div>
+            <button
+              title="Delete Entry"
+              class="delete-btn"
+              onclick="showDeleteModal(${entryId})"
+              aria-label="Delete journal entry"
+              type="button"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+            <div class="entry"><strong>📝 Entry:</strong><br>${item.entry}</div>
             <div class="emotions">
-              <strong>Before:</strong> ${item.emotion_before} |
-              <strong>After:</strong> ${item.emotion_after || "—"}
+              <strong>Before:</strong> <span class="emotion-tag ${beforeColor}">${item.emotion_before}</span> |
+              <strong>After:</strong> ${afterSpan}
             </div>
           `;
           historyDiv.appendChild(box);
         });
       } catch (err) {
         console.error("Error loading history:", err);
+        const historyDiv = document.getElementById("history-list");
+        historyDiv.innerHTML = "<p style='color:#f87171;'>Failed to load history.</p>";
       }
     }
+
+    function showDeleteModal(id) {
+      entryToDelete = id;
+      document.getElementById('modalOverlay').style.display = 'flex';
+    }
+
+    function hideDeleteModal() {
+      entryToDelete = null;
+      document.getElementById('modalOverlay').style.display = 'none';
+    }
+
+    async function deleteEntry() {
+      if (entryToDelete === null) return;
+
+      try {
+        const res = await fetch(`http://localhost:8000/delete-entry/${entryToDelete}`, {
+          method: "DELETE"
+        });
+        const data = await res.json();
+        if (data.message === "Deleted") {
+          hideDeleteModal();
+          fetchHistory();
+        } else {
+          alert("Failed to delete.");
+        }
+      } catch (err) {
+        console.error("Error deleting entry:", err);
+        alert("Error deleting entry, see console.");
+      }
+    }
+
+    document.getElementById('confirmDelete').addEventListener('click', deleteEntry);
+    document.getElementById('cancelDelete').addEventListener('click', hideDeleteModal);
 
     window.onload = fetchHistory;
   </script>

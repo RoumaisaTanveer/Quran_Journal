@@ -99,7 +99,7 @@
 <body>
 
   <div class="top-bar">
-    <h1>With the Qur’an</h1>
+    <h1>With the Quran </h1>
     <a href="history.html" class="history-link">🕊️ Journal History</a>
   </div>
 
@@ -168,25 +168,33 @@
         alert("Couldn't fetch results. Check backend or connection.");
       }
     }
+async function submitAfterEmotion(entryId) {
+  const emotionInput = document.getElementById("emotionInput");
+  const button = emotionInput.nextElementSibling;
+  const emotion = emotionInput.value.trim();
+  if (!emotion) return;
 
-    async function submitAfterEmotion(entryId) {
-      const emotion = document.getElementById("emotionInput").value.trim();
-      if (!emotion) return;
+  try {
+    await fetch("http://localhost:8000/update-emotion", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ entry_id: entryId, emotion_after: emotion })
+    });
 
-      try {
-        await fetch("http://localhost:8000/update-emotion", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ entry_id: entryId, emotion_after: emotion })
-        });
+    // 1. Change button text to "Saved ✅"
+    button.innerText = "Saved ";
 
-        // Clear emotion input box
-        document.getElementById("emotionInput").value = "";
+    // 2. After 2 seconds, reset button and clear input
+    setTimeout(() => {
+      button.innerText = "Save Feeling";
+      emotionInput.value = "";
+    }, 1000);  // 2000ms = 2 seconds
 
-      } catch (err) {
-        console.error("Error saving emotion:", err);
-      }
-    }
+  } catch (err) {
+    console.error("Error saving emotion:", err);
+  }
+}
+
   </script>
 
 </body>

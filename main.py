@@ -211,6 +211,7 @@ class HistoryItem(BaseModel):
     emotion_after: Optional[str]
     comfort: str
     matches: List[AyahMatch]
+    
 
 # ─── UTILITIES ──────────────────────────────────────────────────────────
 def call_openrouter(system: str, user: str) -> str:
@@ -245,10 +246,15 @@ def call_openrouter(system: str, user: str) -> str:
 
 def detect_emotion(entry: str) -> str:
     system = (
-        "You are an emotion detector. Respond with ONLY ONE WORD (lowercase), like: sad, anxious, hopeful, grateful, angry, stressed, tired, peaceful, confused, happy, lonely, heartbroken, content, reflective. Do NOT explain."
+        "You are an emotion classifier. Your job is to detect the dominant emotion in a journal entry. "
+        "Respond with exactly ONE WORD (lowercase), and choose only from this list: "
+        "sad, anxious, hopeful, grateful, angry, stressed, tired, peaceful, confused, happy, lonely, heartbroken, content, reflective. "
+        "Do NOT explain. Do NOT use any other words."
     )
     user = f"Emotion in journal entry:\n{entry}"
+
     raw = call_openrouter(system, user)
+    print("🧪 Raw emotion response:", repr(raw))  # ✅ Log the raw response
 
     if not raw:
         return "unsure"
@@ -260,10 +266,12 @@ def detect_emotion(entry: str) -> str:
     }
 
     if first_word in valid_emotions:
+        print("✅ Detected emotion:", first_word)
         return first_word
     else:
-        print("⚠️ Emotion raw result (rejected):", raw)
+        print("⚠️ Emotion not in valid list:", first_word)
         return "unsure"
+
 
 
 
@@ -319,3 +327,11 @@ def update_emotion(data: EmotionUpdate):
 @app.get("/history", response_model=List[HistoryItem])
 def get_history():
     return history_db
+
+
+@app.delete("/delete-entry/{entry_id}")
+def delete_entry(entry_id: int):
+    if 0 <= entry_id < len(history_db):
+        history_db.pop(entry_id)
+        return {"message": "Deleted"}
+    return {"error": "Invalid entry ID"}
