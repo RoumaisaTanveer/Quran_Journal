@@ -161,10 +161,13 @@ from typing import List, Optional
 import pandas as pd
 from sentence_transformers import SentenceTransformer, util
 import requests
+import os
 
 # ─── CONFIG ─────────────────────────────────────────────────────────────
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-GPT_MODEL = "mistralai/mistral-7b-instruct"
+
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_URL = os.getenv("OPENROUTER_URL", "https://openrouter.ai/api/v1/chat/completions")
+GPT_MODEL = os.getenv("GPT_MODEL", "mistralai/mistral-7b-instruct")
 
 # ─── FASTAPI ────────────────────────────────────────────────────────────
 app = FastAPI()
