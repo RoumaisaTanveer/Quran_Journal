@@ -18,7 +18,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all for now
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,7 +30,7 @@ ayahs = df['ayah_en'].astype(str).tolist()
 model = SentenceTransformer('all-MiniLM-L6-v2')
 ayah_embeddings = model.encode(ayahs, convert_to_tensor=True)
 
-history_db = []  # 🔸 In-memory storage
+history_db = []  
 
 # ─── MODELS ─────────────────────────────────────────────────────────────
 class EntryRequest(BaseModel):
@@ -102,7 +102,7 @@ def detect_emotion(entry: str) -> str:
     user = f"Emotion in journal entry:\n{entry}"
 
     raw = call_openrouter(system, user)
-    print("🧪 Raw emotion response:", repr(raw))  # ✅ Log the raw response
+    print("🧪 Raw emotion response:", repr(raw))  #  Log the raw response for error detection
 
     if not raw:
         return "unsure"

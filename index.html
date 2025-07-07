@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Qur’an Journal</title>
-<!-- Arabic Font -->
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic&display=swap" rel="stylesheet">
 
 <style>
@@ -59,7 +58,7 @@
     border: 1px solid #333;
   }
 
-  /* 🟡 Arabic ayah */
+  /*  Arabic ayah */
   .ayah.arabic {
     font-family: 'Noto Naskh Arabic', serif;
     direction: rtl;
@@ -71,7 +70,7 @@
     margin-bottom: 10px;
   }
 
-  /* 🔵 English ayah */
+  /* English ayah */
   .ayah.english {
     font-size: 1.1rem;
     color: #e0e0e0;
@@ -206,11 +205,11 @@ async function submitAfterEmotion(entryId) {
     // 1. Change button text to "Saved ✅"
     button.innerText = "Saved ";
 
-    // 2. After 2 seconds, reset button and clear input
+    // 2. After 1 second, reset button and clear input
     setTimeout(() => {
       button.innerText = "Save Feeling";
       emotionInput.value = "";
-    }, 1000);  // 2000ms = 2 seconds
+    }, 1000);  // 1000ms = 1 seconds
 
   } catch (err) {
     console.error("Error saving emotion:", err);
