@@ -3,98 +3,116 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Qur’an Buddy</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0f0f0f;
-      color: #f5f5f5;
-      padding: 20px;
-      max-width: 700px;
-      margin: auto;
-    }
+  <title>Qur’an Journal</title>
+<!-- Arabic Font -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic&display=swap" rel="stylesheet">
 
-    h1 {
-      color: #fcd34d;
-      font-weight: 500;
-      text-shadow: 0 0 8px rgba(252, 211, 77, 0.3);
-    }
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #0f0f0f;
+    color: #f5f5f5;
+    padding: 20px;
+    max-width: 700px;
+    margin: auto;
+  }
 
-    textarea, input {
-      width: 100%;
-      padding: 12px;
-      font-size: 1rem;
-      background-color: #1a1a1a;
-      border: 1px solid #333;
-      color: #fff;
-      border-radius: 6px;
-      margin-bottom: 10px;
-    }
+  h1 {
+    color: #fcd34d;
+    font-weight: 500;
+    text-shadow: 0 0 8px rgba(252, 211, 77, 0.3);
+  }
 
-    button {
-      background-color: #fcd34d;
-      color: #000;
-      padding: 10px 20px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 5px;
-    }
+  textarea, input {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    color: #fff;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
 
-    #results {
-      margin-top: 25px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+  button {
+    background-color: #fcd34d;
+    color: #000;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 5px;
+  }
 
-    .ayah-box, .comfort-box, .emotion-box {
-      background: #1a1a1a;
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid #333;
-    }
+  #results {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
-    .ayah {
-      font-style: italic;
-      font-size: 1.1rem;
-      color: #e0e0e0;
-    }
+  .ayah-box, .comfort-box, .emotion-box {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #333;
+  }
 
-    .surah {
-      margin-top: 10px;
-      font-size: 0.9rem;
-      color: #999;
-    }
+  /* 🟡 Arabic ayah */
+  .ayah.arabic {
+    font-family: 'Noto Naskh Arabic', serif;
+    direction: rtl;
+    font-size: 1.6rem;
+    line-height: 2;
+    font-style: normal;
+    color: #fefefe;
+    text-align: right;
+    margin-bottom: 10px;
+  }
 
-    .comfort-box {
-      border-left: 4px solid #fcd34d;
-      color: #fcd34d;
-      font-style: italic;
-    }
+  /* 🔵 English ayah */
+  .ayah.english {
+    font-size: 1.1rem;
+    color: #e0e0e0;
+    font-style: normal;
+    margin-top: 5px;
+  }
 
-    .emotion-box {
-      margin-top: 20px;
-      background-color: #1c1c1c;
-      padding: 16px;
-      border-radius: 10px;
-      color: #ccc;
-    }
+  .surah {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #999;
+  }
 
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
+  .comfort-box {
+    border-left: 4px solid #fcd34d;
+    color: #fcd34d;
+    font-style: italic;
+  }
 
-    .history-link {
-      color: #fcd34d;
-      text-decoration: none;
-      font-weight: bold;
-    }
-  </style>
+  .emotion-box {
+    margin-top: 20px;
+    background-color: #1c1c1c;
+    padding: 16px;
+    border-radius: 10px;
+    color: #ccc;
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .history-link {
+    color: #fcd34d;
+    text-decoration: none;
+    font-weight: bold;
+  }
+</style>
+
 </head>
 <body>
 
@@ -134,10 +152,14 @@
         data.matches.forEach(match => {
           const box = document.createElement("div");
           box.className = "ayah-box";
+          
+
           box.innerHTML = `
-            <div class="ayah">"${match.ayah}"</div>
-            <div class="surah">— Surah ${match.surah}, Ayah ${match.ayah_no}</div>
-          `;
+  <div class="ayah arabic">${match.ayah_ar}</div>
+  <div class="ayah english">"${match.ayah}"</div>
+  <div class="surah">— Surah ${match.surah}, Ayah ${match.ayah_no}</div>
+`;
+
           resultsDiv.appendChild(box);
         });
 

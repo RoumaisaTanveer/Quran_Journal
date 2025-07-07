@@ -197,6 +197,7 @@ class AyahMatch(BaseModel):
     surah: str
     ayah_no: int
     ayah: str
+    ayah_ar: str 
 
 class MatchResponse(BaseModel):
     matches: List[AyahMatch]
@@ -298,7 +299,8 @@ def match_ayahs(request: EntryRequest):
         matches.append(AyahMatch(
             surah=row['surah_name_roman'],
             ayah_no=int(row['ayah_no_surah']),
-            ayah=row['ayah_en'].strip()
+            ayah=row['ayah_en'].strip(),
+            ayah_ar=row['ayah_ar'].strip()
         ))
 
     emotion = detect_emotion(request.entry)
