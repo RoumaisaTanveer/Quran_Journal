@@ -1,5 +1,7 @@
 fastapi
 uvicorn
 pandas
-sentence-transformers
+requests
 torch
+sentence-transformers
+python-dotenv
