@@ -2,6 +2,10 @@
 
 A simple web app that helps you reflect emotionally and spiritually by journaling. It uses AI to provide relevant Qur’anic ayahs, gentle comforting messages, and tracks your emotional state before and after.
 
+> ⚠️ This is a **first prototype** built for feedback and learning purposes.  
+> I’m actively working on developing a more polished and production-ready version.
+
+
 ---
 
 ## ✨ Features
