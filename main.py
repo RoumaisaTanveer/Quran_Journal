@@ -1,17 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from typing import List, Optional
 import pandas as pd
 from sentence_transformers import SentenceTransformer, util
-import requests
-import os
 
-# ─── CONFIG ─────────────────────────────────────────────────────────────
-
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-OPENROUTER_URL = os.getenv("OPENROUTER_URL", "https://openrouter.ai/api/v1/chat/completions")
-GPT_MODEL = os.getenv("GPT_MODEL", "mistralai/mistral-7b-instruct")
+from schema import EmotionUpdate,AyahMatch,MatchResponse,EntryRequest,HistoryItem
+from utils import  detect_emotion,generate_comfort_message
 
 # ─── FASTAPI ────────────────────────────────────────────────────────────
 app = FastAPI()
@@ -32,105 +26,15 @@ ayah_embeddings = model.encode(ayahs, convert_to_tensor=True)
 
 history_db = []  
 
-# ─── MODELS ─────────────────────────────────────────────────────────────
-class EntryRequest(BaseModel):
-    entry: str
-    top_n: int = 3
 
-class AyahMatch(BaseModel):
-    surah: str
-    ayah_no: int
-    ayah: str
-    ayah_ar: str 
-
-class MatchResponse(BaseModel):
-    matches: List[AyahMatch]
-    comfort: str
-    emotion_before: str
-    entry_id: int
-
-class EmotionUpdate(BaseModel):
-    entry_id: int
-    emotion_after: str
-
-class HistoryItem(BaseModel):
-    entry: str
-    emotion_before: str
-    emotion_after: Optional[str]
-    comfort: str
-    matches: List[AyahMatch]
     
 
-# ─── UTILITIES ──────────────────────────────────────────────────────────
-def call_openrouter(system: str, user: str) -> str:
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    payload = {
-        "model": GPT_MODEL,
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": user}
-        ]
-    }
-
-    try:
-        res = requests.post(OPENROUTER_URL, headers=headers, json=payload, timeout=10)
-        res.raise_for_status()
-        data = res.json()
-        
-        # Log full response if missing keys
-        if "choices" not in data or "message" not in data["choices"][0]:
-            print("⚠️ Unexpected OpenRouter response:", data)
-            return ""
-
-        return data["choices"][0]["message"]["content"].strip()
-        
-    except Exception as e:
-        print("❌ OpenRouter error:", e)
-        return ""
-
-def detect_emotion(entry: str) -> str:
-    system = (
-        "You are an emotion classifier. Your job is to detect the dominant emotion in a journal entry. "
-        "Respond with exactly ONE WORD (lowercase), and choose only from this list: "
-        "sad, anxious, hopeful, grateful, angry, stressed, tired, peaceful, confused, happy, lonely, heartbroken, content, reflective. "
-        "Do NOT explain. Do NOT use any other words."
-    )
-    user = f"Emotion in journal entry:\n{entry}"
-
-    raw = call_openrouter(system, user)
-    print("🧪 Raw emotion response:", repr(raw))  #  Log the raw response for error detection
-
-    if not raw:
-        return "unsure"
-
-    first_word = raw.strip().lower().split()[0]
-    valid_emotions = {
-        "sad", "anxious", "hopeful", "grateful", "angry", "stressed", "tired",
-        "peaceful", "confused", "happy", "lonely", "heartbroken", "content", "reflective"
-    }
-
-    if first_word in valid_emotions:
-        print("✅ Detected emotion:", first_word)
-        return first_word
-    else:
-        print("⚠️ Emotion not in valid list:", first_word)
-        return "unsure"
 
 
 
 
 
-def generate_comfort_message(entry: str) -> str:
-    system = ("You're a soft, kind Islamic companion who replies to emotional journal entries in simple, warm words. "
-              "Use short sentences. Avoid poetry or deep metaphors. No quotes, no 'I'm sorry to hear'. Just calming, real advice, like a good friend.")
-    user = f"My journal entry: {entry}\n\nWrite a 2–3 line comforting message."
-    return call_openrouter(system, user) or "You're doing better than you think. One step at a time is still progress. 🤍"
 
-# ─── ROUTES ──────────────────────────────────────────────────────────────
 @app.post("/match-ayahs", response_model=MatchResponse)
 def match_ayahs(request: EntryRequest):
     entry_embedding = model.encode(request.entry, convert_to_tensor=True)
