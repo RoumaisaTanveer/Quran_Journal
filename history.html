@@ -2,177 +2,98 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Journal History</title>
- 
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-  />
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0f0f0f;
-      color: #f5f5f5;
-      padding: 20px;
-      max-width: 700px;
-      margin: auto;
-      position: relative;
-    }
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Journal History - Qur'an Journal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
-    h1 {
-      color: #fcd34d;
-      font-weight: 500;
-      text-shadow: 0 0 8px rgba(252, 211, 77, 0.3);
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .history-item {
-      background: #1a1a1a;
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid #333;
-      margin-bottom: 15px;
-      position: relative;
-    }
-
-    .entry {
-      color: #ccc;
-      white-space: pre-wrap; /* preserve new lines */
-    }
-
-    .emotions {
-      margin-top: 10px;
-      font-size: 0.9rem;
-    }
-
-    .emotion-tag {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      margin: 2px;
-      color: #000;
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-
-    .green { background-color: #22c55e; }
-    .yellow { background-color: #facc15; }
-    .red { background-color: #ef4444; }
-
-    /* Trash icon button */
-    .delete-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      color: #ef4444;
-      font-size: 16px;
-      line-height: 1;
-      padding: 0;
-      transition: color 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .delete-btn:hover {
-      color: #f87171;
-    }
-
-    /* Modal Overlay */
-    #modalOverlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(0,0,0,0.6);
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-    }
-
-    /* Modal Box */
-    #modalBox {
-      background-color: #1a1a1a;
-      border-radius: 12px;
-      padding: 25px 30px;
-      max-width: 320px;
-      color: #f5f5f5;
-      box-shadow: 0 0 20px rgba(214, 213, 211, 0.3);
-      text-align: center;
-    }
-
-    #modalBox p {
-      margin-bottom: 20px;
-      font-size: 1.1rem;
-    }
-
-    #modalBox button {
-      background-color: #fcd34d;
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
-      margin: 0 10px;
-      min-width: 80px;
-      transition: background-color 0.3s ease;
-    }
-
-    #modalBox button.cancel {
-      background-color: #ef4444;
-      color: white;
-    }
-
-    #modalBox button:hover {
-      filter: brightness(0.9);
-    }
-
-    a.back-link {
-      display: inline-block;
-      margin-bottom: 20px;
-      color: #fcd34d;
-      text-decoration: none;
-      font-weight: bold;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="container wide">
+    <header class="header">
+      <div class="logo">
+        <i class="fas fa-history logo-icon"></i>
+        <h1>Journal History</h1>
+      </div>
+             <div class="header-controls">
+         <div class="theme-toggle" onclick="toggleTheme()">
+           <i class="fas fa-moon theme-icon moon"></i>
+           <i class="fas fa-sun theme-icon sun"></i>
+         </div>
+         <a href="spiritual-tools.html" class="back-link">
+           <i class="fas fa-mosque"></i>
+           Spiritual Tools
+         </a>
+         <a href="index.html" class="back-link">
+           <i class="fas fa-arrow-left"></i>
+           Back to Journal
+         </a>
+       </div>
+    </header>
 
-  <a href="index.html" class="back-link">⬅ Back to Journal</a>
-  <h1>🕊️ Your Journal History</h1>
+    <section class="page-title">
+      <h2>📖 Your Spiritual Journey</h2>
+      <p>Reflect on your past entries and emotional growth</p>
+    </section>
 
-  <div id="history-list"></div>
+    <div id="history-list" class="history-list"></div>
+  </div>
 
   <!-- Modal -->
-  <div id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
-    <div id="modalBox">
-      <p id="modalDesc">Delete this journal entry?</p>
-      <button id="confirmDelete" aria-label="Confirm delete entry">Yes</button>
-      <button id="cancelDelete" class="cancel" aria-label="Cancel delete entry">No</button>
+  <div id="modalOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div class="modal-box">
+      <h3 id="modalTitle">
+        <i class="fas fa-exclamation-triangle"></i>
+        Delete Entry
+      </h3>
+      <p id="modalDesc">Are you sure you want to delete this journal entry? This action cannot be undone.</p>
+      <div class="modal-buttons">
+        <button id="confirmDelete" class="confirm" aria-label="Confirm delete entry">
+          <i class="fas fa-trash"></i>
+          Delete
+        </button>
+        <button id="cancelDelete" class="cancel" aria-label="Cancel delete entry">
+          <i class="fas fa-times"></i>
+          Cancel
+        </button>
+      </div>
     </div>
   </div>
 
   <script>
     let entryToDelete = null;
 
+    // Theme toggle functionality
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+
+    // Load saved theme or default to dark
+    function loadTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+
+    // Load theme on page load
+    loadTheme();
+
     // Map emotions to colors, normalize input
     function emotionColor(emotionRaw) {
-      if (!emotionRaw) return '';
+      if (!emotionRaw) return 'empty';
       const emotion = emotionRaw.toLowerCase().trim();
-      const green = ['peaceful', 'happy', 'reflective'];
-      const yellow = ['grateful', 'hopeful', 'content'];
-      const red = ['sad', 'anxious', 'angry', 'stressed', 'lonely', 'heartbroken', 'tired', 'confused'];
+      const success = ['peaceful', 'happy', 'reflective', 'content', 'grateful', 'hopeful', 'calm', 'blessed'];
+      const warning = ['thoughtful', 'contemplative', 'curious', 'wondering', 'questioning'];
+      const error = ['sad', 'anxious', 'angry', 'stressed', 'lonely', 'heartbroken', 'tired', 'confused', 'worried', 'frustrated'];
 
-      if (green.includes(emotion)) return 'green';
-      if (yellow.includes(emotion)) return 'yellow';
-      if (red.includes(emotion)) return 'red';
-      return '';
+      if (success.includes(emotion)) return 'success';
+      if (warning.includes(emotion)) return 'warning';
+      if (error.includes(emotion)) return 'error';
+      return 'default';
     }
 
     async function fetchHistory() {
@@ -183,19 +104,31 @@
         const historyDiv = document.getElementById("history-list");
         historyDiv.innerHTML = "";
 
+        if (history.length === 0) {
+          historyDiv.innerHTML = `
+            <div class="empty-state fade-in">
+              <i class="fas fa-book-open"></i>
+              <h3>No entries yet</h3>
+              <p>Your spiritual journey awaits. Start by creating your first journal entry.</p>
+              <a href="index.html">Create your first entry</a>
+            </div>
+          `;
+          return;
+        }
+
         // Show newest first
         history.slice().reverse().forEach((item, i) => {
           const entryId = history.length - 1 - i;
-
-          const box = document.createElement("div");
-          box.className = "history-item";
-
           const beforeColor = emotionColor(item.emotion_before);
           const afterColor = emotionColor(item.emotion_after);
 
+          const box = document.createElement("div");
+          box.className = "history-item fade-in";
+          box.style.animationDelay = `${i * 0.1}s`;
+
           const afterSpan = (item.emotion_after && item.emotion_after.trim() !== "")
-            ? `<span class="emotion-tag ${afterColor || 'yellow'}">${item.emotion_after}</span>`
-            : `<span class="emotion-tag yellow">—</span>`;
+            ? `<span class="emotion-tag ${afterColor}">${item.emotion_after}</span>`
+            : `<span class="emotion-tag empty">No reflection yet</span>`;
 
           box.innerHTML = `
             <button
@@ -207,10 +140,22 @@
             >
               <i class="fas fa-trash"></i>
             </button>
-            <div class="entry"><strong>📝 Entry:</strong><br>${item.entry}</div>
+            <div class="entry">
+              <strong>
+                <i class="fas fa-feather"></i>
+                Journal Entry
+              </strong>
+              <div class="entry-content">${item.entry}</div>
+            </div>
             <div class="emotions">
-              <strong>Before:</strong> <span class="emotion-tag ${beforeColor}">${item.emotion_before}</span> |
-              <strong>After:</strong> ${afterSpan}
+              <div class="emotion-group">
+                <strong>Before:</strong> 
+                <span class="emotion-tag ${beforeColor}">${item.emotion_before}</span>
+              </div>
+              <div class="emotion-group">
+                <strong>After:</strong> 
+                ${afterSpan}
+              </div>
             </div>
           `;
           historyDiv.appendChild(box);
@@ -218,22 +163,33 @@
       } catch (err) {
         console.error("Error loading history:", err);
         const historyDiv = document.getElementById("history-list");
-        historyDiv.innerHTML = "<p style='color:#f87171;'>Failed to load history.</p>";
+        historyDiv.innerHTML = `
+          <div class="error-state fade-in">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Failed to load history</h3>
+            <p>Please check your connection and try again.</p>
+          </div>
+        `;
       }
     }
 
     function showDeleteModal(id) {
       entryToDelete = id;
-      document.getElementById('modalOverlay').style.display = 'flex';
+      document.getElementById('modalOverlay').classList.add('show');
     }
 
     function hideDeleteModal() {
       entryToDelete = null;
-      document.getElementById('modalOverlay').style.display = 'none';
+      document.getElementById('modalOverlay').classList.remove('show');
     }
 
     async function deleteEntry() {
       if (entryToDelete === null) return;
+
+      const confirmBtn = document.getElementById('confirmDelete');
+      const originalText = confirmBtn.innerHTML;
+      confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+      confirmBtn.disabled = true;
 
       try {
         const res = await fetch(`http://localhost:8000/delete-entry/${entryToDelete}`, {
@@ -244,19 +200,37 @@
           hideDeleteModal();
           fetchHistory();
         } else {
-          alert("Failed to delete.");
+          alert("Failed to delete entry.");
         }
       } catch (err) {
         console.error("Error deleting entry:", err);
-        alert("Error deleting entry, see console.");
+        alert("Error deleting entry. Please try again.");
+      } finally {
+        confirmBtn.innerHTML = originalText;
+        confirmBtn.disabled = false;
       }
     }
 
+    // Event listeners
     document.getElementById('confirmDelete').addEventListener('click', deleteEntry);
     document.getElementById('cancelDelete').addEventListener('click', hideDeleteModal);
+    
+    // Close modal when clicking outside
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+      if (e.target === this) {
+        hideDeleteModal();
+      }
+    });
 
+    // Escape key to close modal
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.getElementById('modalOverlay').classList.contains('show')) {
+        hideDeleteModal();
+      }
+    });
+
+    // Load history when page loads
     window.onload = fetchHistory;
   </script>
-
 </body>
 </html>

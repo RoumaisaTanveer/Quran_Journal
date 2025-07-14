@@ -1,0 +1,1036 @@
+/* ===== CSS Variables ===== */
+:root {
+  /* Dark theme variables */
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #2a2a2a;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-tertiary: #a0a0a0;
+  --accent-primary: #fcd34d;
+  --accent-secondary: #f59e0b;
+  --accent-tertiary: #92400e;
+  --border-color: #333333;
+  --shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 20px 60px rgba(0, 0, 0, 0.4);
+  --gradient-primary: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
+  --gradient-bg: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+}
+
+[data-theme="light"] {
+  /* Light theme variables */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #e2e8f0;
+  --text-primary: #1a202c;
+  --text-secondary: #2d3748;
+  --text-tertiary: #4a5568;
+  --accent-primary: #f59e0b;
+  --accent-secondary: #d97706;
+  --accent-tertiary: #92400e;
+  --border-color: #e2e8f0;
+  --shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 20px 60px rgba(0, 0, 0, 0.15);
+  --gradient-primary: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --gradient-bg: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  --success: #059669;
+  --warning: #d97706;
+  --error: #dc2626;
+}
+
+/* ===== Reset and Base Styles ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--gradient-bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: all 0.3s ease;
+  min-height: 100vh;
+}
+
+/* ===== Layout Components ===== */
+.container {
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.container.wide {
+  max-width: 1000px;
+}
+
+/* ===== Header Styles ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+}
+
+.logo-icon {
+  font-size: 2rem;
+  color: var(--accent-primary);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ===== Theme Toggle ===== */
+.theme-toggle {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: 50px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  width: 60px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow);
+}
+
+.theme-toggle::before {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  left: 4px;
+  transform: translateX(0);
+}
+
+[data-theme="light"] .theme-toggle::before {
+  transform: translateX(24px);
+}
+
+.theme-icon {
+  position: absolute;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.theme-icon.sun {
+  right: 6px;
+  opacity: 0;
+}
+
+.theme-icon.moon {
+  left: 6px;
+  opacity: 1;
+}
+
+[data-theme="light"] .theme-icon.sun {
+  opacity: 1;
+}
+
+[data-theme="light"] .theme-icon.moon {
+  opacity: 0;
+}
+
+/* ===== Navigation Links ===== */
+.history-link, .back-link, .nav-link {
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.history-link:hover, .back-link:hover, .nav-link:hover {
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+}
+
+/* ===== Page Title Section ===== */
+.intro, .page-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.intro h2, .page-title h2 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.page-title h2 {
+  font-size: 2rem;
+}
+
+.intro p, .page-title p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* ===== Form Elements ===== */
+.input-section {
+  margin-bottom: 1.5rem;
+}
+
+.input-container {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 16px;
+  resize: vertical;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(252, 211, 77, 0.1), var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* ===== Button Styles ===== */
+.submit-btn {
+  background: var(--gradient-primary);
+  color: var(--bg-primary);
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.submit-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
+
+.submit-btn:active {
+  transform: translateY(-1px);
+}
+
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===== Card Components ===== */
+.results, .history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.history-list {
+  gap: 1rem;
+}
+
+.ayah-box, .comfort-box, .emotion-box, .history-item, .tool-card {
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 2px solid var(--border-color);
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.ayah-box::before, .history-item::before, .tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+}
+
+.ayah-box::before {
+  height: 4px;
+}
+
+.ayah-box:hover, .history-item:hover, .tool-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
+
+.tool-card:hover {
+  transform: translateY(-3px);
+}
+
+/* ===== Ayah Display ===== */
+.ayah.arabic {
+  font-family: 'Noto Naskh Arabic', serif;
+  direction: rtl;
+  font-size: 1.8rem;
+  line-height: 2.2;
+  color: var(--text-primary);
+  text-align: right;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.ayah.english {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+.surah {
+  font-size: 0.95rem;
+  color: var(--text-tertiary);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ===== Comfort Box ===== */
+.comfort-box {
+  border: 2px solid var(--accent-primary);
+}
+
+.comfort-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--gradient-primary);
+}
+
+.comfort-box strong {
+  color: var(--accent-primary);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.comfort-box p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-top: 1rem;
+}
+
+/* ===== Emotion Tracking ===== */
+.emotion-detected {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.emotion-badge {
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.emotion-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.emotion-input-group label {
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.emotion-input-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.emotion-input {
+  flex: 1;
+  padding: 1rem;
+  font-size: 1rem;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.emotion-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(252, 211, 77, 0.1);
+}
+
+.emotion-btn {
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.emotion-btn:hover {
+  background: var(--accent-secondary);
+  transform: translateY(-2px);
+}
+
+.emotion-btn.saved {
+  background: #10b981;
+}
+
+/* ===== History Page Styles ===== */
+.entry {
+  margin-bottom: 1rem;
+}
+
+.entry strong {
+  color: var(--text-primary);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.entry-content {
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  padding: 0.75rem 1rem;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  border-left: 3px solid var(--accent-primary);
+}
+
+.emotions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.95rem;
+}
+
+.emotion-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.emotion-group strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.emotion-tag {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: var(--bg-primary);
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.emotion-tag.success {
+  background: var(--success);
+}
+
+.emotion-tag.warning {
+  background: var(--warning);
+}
+
+.emotion-tag.error {
+  background: var(--error);
+}
+
+.emotion-tag.default {
+  background: var(--accent-primary);
+}
+
+.emotion-tag.empty {
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-color);
+}
+
+.delete-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--error);
+  font-size: 1rem;
+  padding: 0.4rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn:hover {
+  background: var(--error);
+  color: var(--bg-primary);
+  transform: scale(1.1);
+}
+
+/* ===== State Components ===== */
+.empty-state {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  border: 2px dashed var(--border-color);
+  color: var(--text-tertiary);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--accent-primary);
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.empty-state a {
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.empty-state a:hover {
+  text-decoration: underline;
+}
+
+.error-state {
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 2px solid var(--error);
+  color: var(--error);
+  text-align: center;
+}
+
+.error-state i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--text-tertiary);
+  font-size: 1.1rem;
+}
+
+.loading-state i {
+  margin-right: 0.5rem;
+  animation: spin 1s linear infinite;
+}
+
+/* ===== Modal Styles ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal-box {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: var(--shadow-hover);
+  border: 2px solid var(--border-color);
+  text-align: center;
+}
+
+.modal-box h3 {
+  color: var(--text-primary);
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.modal-box p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.modal-buttons button {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+.modal-buttons .confirm {
+  background: var(--error);
+  color: var(--bg-primary);
+}
+
+.modal-buttons .confirm:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+.modal-buttons .cancel {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+}
+
+.modal-buttons .cancel:hover {
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+  transform: translateY(-2px);
+}
+
+/* ===== Spiritual Tools Styles ===== */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.tool-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.tool-icon {
+  font-size: 1.5rem;
+  color: var(--accent-primary);
+}
+
+.tool-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Tasbih Counter */
+.tasbih-container {
+  text-align: center;
+}
+
+.tasbih-counter {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  margin: 1rem 0;
+  text-shadow: 0 0 20px rgba(252, 211, 77, 0.3);
+}
+
+.tasbih-button {
+  background: var(--gradient-primary);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+  margin: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.tasbih-button:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-hover);
+}
+
+.tasbih-button:active {
+  transform: scale(0.95);
+}
+
+.tasbih-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.control-btn {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.control-btn:hover {
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+}
+
+.dhikr-text {
+  font-family: 'Noto Naskh Arabic', serif;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin: 1rem 0;
+  text-align: center;
+  direction: rtl;
+}
+
+/* Prayer Tracker */
+.prayer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.prayer-item {
+  background: var(--bg-tertiary);
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.prayer-item.completed {
+  background: var(--success);
+  color: var(--bg-primary);
+  border-color: var(--success);
+}
+
+.prayer-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.prayer-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.prayer-time {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* Daily Duas */
+.dua-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.dua-item {
+  background: var(--bg-tertiary);
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  border-left: 3px solid var(--accent-primary);
+}
+
+.dua-arabic {
+  font-family: 'Noto Naskh Arabic', serif;
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  direction: rtl;
+  text-align: right;
+  margin-bottom: 0.5rem;
+  line-height: 1.8;
+}
+
+.dua-translation {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.dua-category {
+  font-size: 0.8rem;
+  color: var(--accent-primary);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Hadith Display */
+.hadith-container {
+  background: var(--bg-tertiary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border-left: 4px solid var(--accent-primary);
+  margin: 1rem 0;
+}
+
+.hadith-text {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.hadith-source {
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+  font-style: italic;
+  text-align: right;
+}
+
+.refresh-btn {
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+.refresh-btn:hover {
+  background: var(--accent-secondary);
+  transform: translateY(-2px);
+}
+
+/* ===== Animations ===== */
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+  .container {
+    padding: 0.75rem;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+  }
+  
+  .header-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .logo h1 {
+    font-size: 2rem;
+  }
+  
+  .emotion-input-container {
+    flex-direction: column;
+  }
+  
+  .ayah.arabic {
+    font-size: 1.5rem;
+  }
+  
+  .emotions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .entry-content {
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+  }
+  
+  .modal-box {
+    padding: 1.25rem;
+  }
+  
+  .modal-buttons {
+    flex-direction: column;
+  }
+  
+  .tools-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tasbih-button {
+    width: 100px;
+    height: 100px;
+    font-size: 1.2rem;
+  }
+  
+  .tasbih-counter {
+    font-size: 2.5rem;
+  }
+  
+  .prayer-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+} 
