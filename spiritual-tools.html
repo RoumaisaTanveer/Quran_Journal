@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spiritual Tools - Qur'an Journal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container wide">
+    <header class="header">
+      <div class="logo">
+        <i class="fas fa-mosque logo-icon"></i>
+        <h1>Spiritual Tools</h1>
+      </div>
+      <div class="header-controls">
+        <div class="theme-toggle" onclick="toggleTheme()">
+          <i class="fas fa-moon theme-icon moon"></i>
+          <i class="fas fa-sun theme-icon sun"></i>
+        </div>
+        <div class="nav-links">
+          <a href="index.html" class="nav-link">
+            <i class="fas fa-journal-whills"></i>
+            Journal
+          </a>
+          <a href="history.html" class="nav-link">
+            <i class="fas fa-history"></i>
+            History
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <section class="page-title">
+      <h2>🕌 Spiritual Companions</h2>
+      <p>Tools to enrich your daily worship and remembrance of Allah</p>
+    </section>
+
+    <div class="tools-grid">
+      <!-- Digital Tasbih -->
+      <div class="tool-card">
+        <div class="tool-header">
+          <i class="fas fa-prayer-beads tool-icon"></i>
+          <h3 class="tool-title">Digital Tasbih</h3>
+        </div>
+        <div class="tasbih-container">
+          <div class="dhikr-text" id="dhikrText">سُبْحَانَ اللَّهِ</div>
+          <div class="tasbih-counter" id="tasbihCounter">0</div>
+          <button class="tasbih-button" onclick="incrementTasbih()">
+            <i class="fas fa-hand-paper"></i>
+          </button>
+          <div class="tasbih-controls">
+            <button class="control-btn" onclick="resetTasbih()">Reset</button>
+            <button class="control-btn" onclick="changeDhikr()">Change</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prayer Tracker -->
+      <div class="tool-card">
+        <div class="tool-header">
+          <i class="fas fa-clock tool-icon"></i>
+          <h3 class="tool-title">Prayer Tracker</h3>
+        </div>
+        <div class="prayer-grid">
+          <div class="prayer-item" onclick="togglePrayer('fajr')">
+            <div class="prayer-name">Fajr</div>
+            <div class="prayer-time">5:30 AM</div>
+          </div>
+          <div class="prayer-item" onclick="togglePrayer('dhuhr')">
+            <div class="prayer-name">Dhuhr</div>
+            <div class="prayer-time">12:15 PM</div>
+          </div>
+          <div class="prayer-item" onclick="togglePrayer('asr')">
+            <div class="prayer-name">Asr</div>
+            <div class="prayer-time">3:45 PM</div>
+          </div>
+          <div class="prayer-item" onclick="togglePrayer('maghrib')">
+            <div class="prayer-name">Maghrib</div>
+            <div class="prayer-time">6:20 PM</div>
+          </div>
+          <div class="prayer-item" onclick="togglePrayer('isha')">
+            <div class="prayer-name">Isha</div>
+            <div class="prayer-time">8:00 PM</div>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+          <span id="prayerProgress">0/5 prayers completed today</span>
+        </div>
+      </div>
+
+      <!-- Daily Duas -->
+      <div class="tool-card">
+        <div class="tool-header">
+          <i class="fas fa-hands tool-icon"></i>
+          <h3 class="tool-title">Daily Duas</h3>
+        </div>
+        <div class="dua-container" id="duaContainer">
+          <!-- Duas will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Daily Hadith -->
+      <div class="tool-card">
+        <div class="tool-header">
+          <i class="fas fa-book-open tool-icon"></i>
+          <h3 class="tool-title">Daily Hadith</h3>
+        </div>
+        <div class="hadith-container" id="hadithContainer">
+          <!-- Hadith will be populated by JavaScript -->
+        </div>
+        <button class="refresh-btn" onclick="loadNewHadith()">
+          <i class="fas fa-sync-alt"></i>
+          New Hadith
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Theme toggle functionality
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+
+    // Load saved theme
+    function loadTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+
+    // Tasbih functionality
+    let tasbihCount = parseInt(localStorage.getItem('tasbihCount') || '0');
+    let currentDhikrIndex = parseInt(localStorage.getItem('currentDhikrIndex') || '0');
+
+    const dhikrList = [
+      { arabic: 'سُبْحَانَ اللَّهِ', transliteration: 'Subhan Allah' },
+      { arabic: 'الْحَمْدُ لِلَّهِ', transliteration: 'Alhamdulillah' },
+      { arabic: 'اللَّهُ أَكْبَرُ', transliteration: 'Allahu Akbar' },
+      { arabic: 'لَا إِلَهَ إِلَّا اللَّهُ', transliteration: 'La ilaha illa Allah' },
+      { arabic: 'أَسْتَغْفِرُ اللَّهَ', transliteration: 'Astaghfirullah' },
+      { arabic: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ', transliteration: 'La hawla wa la quwwata illa billah' }
+    ];
+
+    function updateTasbihDisplay() {
+      document.getElementById('tasbihCounter').textContent = tasbihCount;
+      document.getElementById('dhikrText').textContent = dhikrList[currentDhikrIndex].arabic;
+    }
+
+    function incrementTasbih() {
+      tasbihCount++;
+      updateTasbihDisplay();
+      localStorage.setItem('tasbihCount', tasbihCount);
+      
+      // Add visual feedback
+      const counter = document.getElementById('tasbihCounter');
+      counter.style.transform = 'scale(1.1)';
+      setTimeout(() => {
+        counter.style.transform = 'scale(1)';
+      }, 150);
+    }
+
+    function resetTasbih() {
+      tasbihCount = 0;
+      updateTasbihDisplay();
+      localStorage.setItem('tasbihCount', tasbihCount);
+    }
+
+    function changeDhikr() {
+      currentDhikrIndex = (currentDhikrIndex + 1) % dhikrList.length;
+      updateTasbihDisplay();
+      localStorage.setItem('currentDhikrIndex', currentDhikrIndex);
+    }
+
+    // Prayer tracker functionality
+    let completedPrayers = JSON.parse(localStorage.getItem('completedPrayers') || '[]');
+    
+    function togglePrayer(prayer) {
+      const index = completedPrayers.indexOf(prayer);
+      if (index > -1) {
+        completedPrayers.splice(index, 1);
+      } else {
+        completedPrayers.push(prayer);
+      }
+      
+      localStorage.setItem('completedPrayers', JSON.stringify(completedPrayers));
+      updatePrayerDisplay();
+    }
+
+    function updatePrayerDisplay() {
+      const prayerItems = document.querySelectorAll('.prayer-item');
+      prayerItems.forEach(item => {
+        const prayerName = item.onclick.toString().match(/'([^']+)'/)[1];
+        if (completedPrayers.includes(prayerName)) {
+          item.classList.add('completed');
+        } else {
+          item.classList.remove('completed');
+        }
+      });
+      
+      document.getElementById('prayerProgress').textContent = 
+        `${completedPrayers.length}/5 prayers completed today`;
+    }
+
+    // Daily Duas
+    const dailyDuas = [
+      {
+        category: 'Morning',
+        arabic: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ',
+        translation: 'We have reached the morning and at this very time unto Allah belongs all sovereignty.'
+      },
+      {
+        category: 'Before Eating',
+        arabic: 'بِسْمِ اللَّهِ',
+        translation: 'In the name of Allah'
+      },
+      {
+        category: 'After Eating',
+        arabic: 'الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا',
+        translation: 'Praise be to Allah who has fed us and given us drink.'
+      },
+      {
+        category: 'Before Sleep',
+        arabic: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',
+        translation: 'In Your name, O Allah, I die and I live.'
+      },
+      {
+        category: 'Entering Home',
+        arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلَجِ وَخَيْرَ الْمَخْرَجِ',
+        translation: 'O Allah, I ask You for the good of entering and the good of leaving.'
+      }
+    ];
+
+    function loadDuas() {
+      const duaContainer = document.getElementById('duaContainer');
+      duaContainer.innerHTML = '';
+      
+      dailyDuas.forEach(dua => {
+        const duaItem = document.createElement('div');
+        duaItem.className = 'dua-item fade-in';
+        duaItem.innerHTML = `
+          <div class="dua-category">${dua.category}</div>
+          <div class="dua-arabic">${dua.arabic}</div>
+          <div class="dua-translation">${dua.translation}</div>
+        `;
+        duaContainer.appendChild(duaItem);
+      });
+    }
+
+    // Daily Hadith
+    const hadithCollection = [
+      {
+        text: 'The Prophet (ﷺ) said: "The believer is not one who eats his fill while his neighbor goes hungry."',
+        source: 'Sahih al-Bukhari'
+      },
+      {
+        text: 'The Prophet (ﷺ) said: "A good word is charity."',
+        source: 'Sahih al-Bukhari'
+      },
+      {
+        text: 'The Prophet (ﷺ) said: "The best of people are those who benefit others."',
+        source: 'Sahih al-Bukhari'
+      },
+      {
+        text: 'The Prophet (ﷺ) said: "Whoever believes in Allah and the Last Day should speak good or remain silent."',
+        source: 'Sahih al-Bukhari'
+      },
+      {
+        text: 'The Prophet (ﷺ) said: "The most beloved deed to Allah is the most regular and constant even if it were little."',
+        source: 'Sahih al-Bukhari'
+      }
+    ];
+
+    function loadNewHadith() {
+      const hadithContainer = document.getElementById('hadithContainer');
+      const randomHadith = hadithCollection[Math.floor(Math.random() * hadithCollection.length)];
+      
+      hadithContainer.innerHTML = `
+        <div class="hadith-text fade-in">${randomHadith.text}</div>
+        <div class="hadith-source fade-in">— ${randomHadith.source}</div>
+      `;
+    }
+
+    // Reset daily progress at midnight
+    function checkNewDay() {
+      const lastDate = localStorage.getItem('lastDate');
+      const today = new Date().toDateString();
+      
+      if (lastDate !== today) {
+        completedPrayers = [];
+        localStorage.setItem('completedPrayers', JSON.stringify(completedPrayers));
+        localStorage.setItem('lastDate', today);
+        updatePrayerDisplay();
+      }
+    }
+
+    // Initialize everything
+    window.onload = function() {
+      loadTheme();
+      updateTasbihDisplay();
+      updatePrayerDisplay();
+      loadDuas();
+      loadNewHadith();
+      checkNewDay();
+    };
+  </script>
+</body>
+</html> 
