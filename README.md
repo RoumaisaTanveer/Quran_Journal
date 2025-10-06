@@ -1,4 +1,4 @@
-#  Qur’an-Powered Journaling App
+#  Qur’an-Powered Journaling App 
 
 A simple web app that helps you reflect emotionally and spiritually by journaling. It uses AI to provide relevant Qur’anic ayahs, gentle comforting messages, and tracks your emotional state before and after.
 
