@@ -106,23 +106,25 @@ def call_openrouter(system: str, user: str, max_tokens: int = 200) -> str:
         return ""
 
 def rewrite_as_spiritual_query(entry: str, emotion: str) -> str:
+    # Natural first-person language so embedding lands near comfort verses,
+    # not accountability/battle verses that share theological keywords
     themes = {
-        "anxious":     "Allah is sufficient put trust in Him relieve worry calm the heart ease distress",
-        "stressed":    "Allah does not burden a soul beyond capacity relief from hardship ease after difficulty",
-        "sad":         "Allah is with the patient do not despair of Allah mercy relief after grief sorrow",
-        "angry":       "restrain anger forgive people Allah loves those who control themselves patience",
-        "lonely":      "Allah is closer than jugular vein He hears you He is with you always near",
-        "heartbroken": "Allah heals hearts broken trust betrayal seek refuge in Allah mend the soul",
-        "hopeful":     "do not lose hope in Allah mercy He answers dua victory comes after patience",
-        "grateful":    "be grateful to Allah thank Him for blessings He increases those who are thankful",
-        "tired":       "after hardship comes ease Allah gives rest to the weary seek strength in prayer",
-        "confused":    "Allah guides to straight path seek His guidance light in darkness clarity wisdom",
-        "reflective":  "reflect on creation signs of Allah wisdom in the heavens earth remember Allah",
-        "peaceful":    "hearts find rest in remembrance of Allah tranquility contentment trust in Him",
-        "happy":       "praise Allah for joy gratitude for blessings He is the source of all good",
-        "content":     "Allah is enough trust His plan acceptance of decree satisfaction in His will",
+        "anxious":     "I am overwhelmed with worry and fear please Allah calm my heart and give me peace and trust",
+        "stressed":    "I am exhausted carrying too many responsibilities I need Allah to help me find relief and ease",
+        "sad":         "my heart is heavy with grief and sorrow I need Allah's comfort mercy and hope to carry on",
+        "angry":       "I feel anger and injustice help me control myself and find patience and forgiveness in Allah",
+        "lonely":      "I feel completely alone and unseen please remind me that Allah is always with me close and near",
+        "heartbroken": "my heart is broken and I feel betrayed I need Allah to heal me and give me strength to go on",
+        "hopeful":     "I believe things will get better I trust in Allah's mercy and His perfect timing for me",
+        "grateful":    "I am filled with gratitude and want to thank Allah for all His blessings in my life",
+        "tired":       "I am deeply exhausted and drained I need rest and Allah's gentle mercy and ease and comfort",
+        "confused":    "I feel lost and don't know which direction to take I need Allah's guidance and clarity",
+        "reflective":  "I am quietly thinking about life and meaning seeking wisdom and closeness to Allah",
+        "peaceful":    "my heart is calm and at rest I feel contentment and gratitude remembering Allah",
+        "happy":       "I feel joyful and happy alhamdulillah I want to thank Allah for this beautiful blessing",
+        "content":     "I feel satisfied and at peace with what Allah has given me accepting His will with gratitude",
     }
-    query = themes.get(emotion, "seeking guidance comfort and mercy from Allah in hardship")
+    query = themes.get(emotion, "I am seeking comfort guidance and mercy from Allah in my struggles")
     print(f"Spiritual query for '{emotion}': {query}")
     return query
 
@@ -199,32 +201,72 @@ GLOBAL_EXCLUSIONS = [
     "two-thirds of the night",
     "when the prayer is ended, disperse", 
     "disperse in the land",
+    "bear another's burden",
+    "no soul shall bear the burden of another",
+    "appointed time has come",
+    "god will not grant a reprieve to a soul",  
 ]
 
 EMOTION_EXCLUSIONS = {
-    "grateful":    ["imminent victory","help from god and","give good tidings","invoke blessings","bestow blessings on the prophet"],
-    "anxious":     ["gathered before","day of judgement","day of resurrection","reckoning","hellfire","punishment","hypocrites","disbelievers","fight","kill","slew","misfortune befall"],
-    "stressed":    ["day of judgement","hellfire","fight","kill","hypocrites","disbelievers","punishment","gathered before"],
-    "sad":         ["hellfire","fight them","kill","disbelievers","punishment"],
-    "lonely":      ["hellfire","fight","kill","disbelievers","punishment","gathered before","day of judgement"],
-    "heartbroken": ["hellfire","fight","kill","disbelievers","punishment"],
-    "angry":       ["hellfire","fight them","kill","gathered before","day of judgement"],
-    "tired": [
-        "fighting for the cause",
-        "others who may be fighting",
-        "when the prayer is ended, disperse",
-        "disperse in the land",
-        "praying at dawn for god",
-        "seeking god's bounty",
-        "stand up praying for nearly",
-        "two-thirds of the night",
+    "grateful":    [
+        "imminent victory", "help from god and", "give good tidings",
+        "invoke blessings", "bestow blessings on the prophet",
+    ],
+    "anxious":     [
+        "gathered before", "day of judgement", "day of resurrection",
+        "reckoning", "hellfire", "punishment", "hypocrites",
+        "disbelievers", "fight", "kill", "slew", "misfortune befall",
+    ],
+    "stressed":    [
+        "day of judgement", "hellfire", "fight", "kill",
+        "hypocrites", "disbelievers", "punishment", "gathered before",
+        "burden-bearer shall bear", "over-laden soul",
+        "no bearer of a burden", "bear the burden of another",
+        "niggardly", "stints", "you stand in need",
+        "cannot defeat his purpose", "nor have you any friend or helper",
+        "he will bring in your place another people",
+        "everyone must bear the consequence",
+        "shall i seek a lord other than",
+        "spend for god's cause",
+    ],
+    "sad":         ["hellfire", "fight them", "kill", "disbelievers", "punishment"],
+    "lonely":      ["hellfire", "fight", "kill", "disbelievers", "punishment", "gathered before", "day of judgement"],
+    "heartbroken": ["hellfire", "fight", "kill", "disbelievers", "punishment"],
+    "angry":       ["hellfire", "fight them", "kill", "gathered before", "day of judgement"],
+    "tired":       [
+        "fighting for the cause", "others who may be fighting",
+        "praying at dawn for god", "seeking god's bounty",
         "hellfire", "fight", "kill", "disbelievers", "punishment",
     ],
 }
 
+# Global journal-context blocklist — wrong for ANY personal emotional entry
+PERSONAL_JOURNAL_BLOCKLIST = [
+    "no bearer of a burden", "bear the burden of another",
+    "burden-bearer shall bear", "over-laden soul",
+    "everyone must bear the consequence",
+    "appointed time has come", "god will not grant a reprieve",
+    "he will bring in your place another people",
+    "cannot defeat his purpose",
+    "nor have you any friend or helper besides god",
+    "niggardly", "whoever stints", "spend for god's cause",
+    "shall i seek a lord other than",
+    "strike their necks", "cast terror", "smite",
+    "prisoners of war", "taken captive",
+    "disperse in the land", "when the prayer is ended",
+    "stand up praying for nearly", "two-thirds of the night",
+    "praying at dawn for god",
+]
+
+def passes_journal_check(idx: int) -> bool:
+    text = str(df.iloc[idx]['ayah_en']).lower()
+    return not any(phrase in text for phrase in PERSONAL_JOURNAL_BLOCKLIST)
+
 def is_eligible_ayah(idx: int, emotion: str) -> bool:
     text = str(df.iloc[idx]['ayah_en']).lower()
     if any(phrase in text for phrase in GLOBAL_EXCLUSIONS):
+        return False
+    if any(phrase in text for phrase in PERSONAL_JOURNAL_BLOCKLIST):
         return False
     if any(phrase in text for phrase in EMOTION_EXCLUSIONS.get(emotion, [])):
         return False
@@ -305,21 +347,37 @@ def match_ayahs(request: EntryRequest):
 
     emotion = detect_emotion(request.entry)
     spiritual_query = rewrite_as_spiritual_query(request.entry, emotion)
+
+    # Encode both: spiritual query (theme) + raw entry (context)
     query_embedding = model.encode(spiritual_query, convert_to_tensor=True)
+    entry_embedding = model.encode(request.entry, convert_to_tensor=True)
+
     candidate_indices = get_candidate_indices(emotion)
     candidate_embeddings = [ayah_embeddings[i] for i in candidate_indices]
+    c_tensor = torch.stack(candidate_embeddings)
 
-    raw_sims = util.cos_sim(query_embedding, torch.stack(candidate_embeddings))[0].tolist()
-    SIMILARITY_THRESHOLD = 0.25
-    threshold_filtered = [(ci, ce) for ci, ce, sim in zip(candidate_indices, candidate_embeddings, raw_sims) if sim >= SIMILARITY_THRESHOLD]
-    print(f"Similarity filter: {len(candidate_indices)} → {len(threshold_filtered)}")
+    # Two-stage scoring: 60% theme match + 40% direct entry match
+    # Prevents context-mismatched verses (e.g. accountability verses for "stressed")
+    # from ranking high just because they share a keyword like "burden"
+    query_sims = util.cos_sim(query_embedding, c_tensor)[0].tolist()
+    entry_sims = util.cos_sim(entry_embedding, c_tensor)[0].tolist()
+    combined_sims = [0.6 * q + 0.4 * e for q, e in zip(query_sims, entry_sims)]
+
+    SIMILARITY_THRESHOLD = 0.20
+    threshold_filtered = [
+        (ci, ce, score) for ci, ce, score
+        in zip(candidate_indices, candidate_embeddings, combined_sims)
+        if score >= SIMILARITY_THRESHOLD
+    ]
+    print(f"Similarity filter: {len(candidate_indices)} → {len(threshold_filtered)} candidates")
 
     if len(threshold_filtered) < request.top_n * 3:
-        top_k = sorted(zip(candidate_indices, candidate_embeddings, raw_sims), key=lambda x: -x[2])
-        threshold_filtered = [(ci, ce) for ci, ce, _ in top_k[:max(request.top_n * 5, 15)]]
+        top_k = sorted(zip(candidate_indices, candidate_embeddings, combined_sims), key=lambda x: -x[2])
+        threshold_filtered = [(ci, ce, s) for ci, ce, s in top_k[:max(request.top_n * 5, 15)]]
+        print(f"Threshold relaxed — using top {len(threshold_filtered)}")
 
-    filtered_indices, filtered_embeds = zip(*threshold_filtered)
-    filtered_indices, filtered_embeds = list(filtered_indices), list(filtered_embeds)
+    filtered_indices = [x[0] for x in threshold_filtered]
+    filtered_embeds = [x[1] for x in threshold_filtered]
 
     selected_indices = mmr_select(query_embedding, filtered_embeds, filtered_indices, top_n=request.top_n, lambda_param=0.85, already_shown=get_shown_indices())
 
