@@ -15,7 +15,7 @@ A simple web app that helps you reflect emotionally and spiritually by journalin
 - 🤍 Receive **gentle, calming messages** powered by an LLM
 - 🧠 Track your **emotions before and after reflection**
 - 📜 View and manage your **journal history**
-- 🗑️ Delete entries via a smooth confirmation modal
+- 🗑️ Delete entries via a smooth confirmation modal.
 
 ---
 
