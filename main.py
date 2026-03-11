@@ -106,8 +106,6 @@ def call_openrouter(system: str, user: str, max_tokens: int = 200) -> str:
         return ""
 
 def rewrite_as_spiritual_query(entry: str, emotion: str) -> str:
-    # Natural first-person language so embedding lands near comfort verses,
-    # not accountability/battle verses that share theological keywords
     themes = {
         "anxious":     "I am overwhelmed with worry and fear please Allah calm my heart and give me peace and trust",
         "stressed":    "I am exhausted carrying too many responsibilities I need Allah to help me find relief and ease",
@@ -208,59 +206,34 @@ GLOBAL_EXCLUSIONS = [
 ]
 
 EMOTION_EXCLUSIONS = {
-    "grateful":    [
-        "imminent victory", "help from god and", "give good tidings",
-        "invoke blessings", "bestow blessings on the prophet",
-    ],
-    "anxious":     [
-        "gathered before", "day of judgement", "day of resurrection",
-        "reckoning", "hellfire", "punishment", "hypocrites",
-        "disbelievers", "fight", "kill", "slew", "misfortune befall",
-    ],
+    "grateful":    ["imminent victory","help from god and","give good tidings","invoke blessings","bestow blessings on the prophet"],
+    "anxious":     ["gathered before","day of judgement","day of resurrection","reckoning","hellfire","punishment","hypocrites","disbelievers","fight","kill","slew","misfortune befall"],
     "stressed":    [
-        "day of judgement", "hellfire", "fight", "kill",
-        "hypocrites", "disbelievers", "punishment", "gathered before",
-        "burden-bearer shall bear", "over-laden soul",
-        "no bearer of a burden", "bear the burden of another",
-        "niggardly", "stints", "you stand in need",
-        "cannot defeat his purpose", "nor have you any friend or helper",
-        "he will bring in your place another people",
-        "everyone must bear the consequence",
-        "shall i seek a lord other than",
-        "spend for god's cause",
+        "day of judgement","hellfire","fight","kill","hypocrites","disbelievers","punishment","gathered before",
+        "burden-bearer shall bear","over-laden soul","no bearer of a burden","bear the burden of another",
+        "niggardly","stints","you stand in need","cannot defeat his purpose",
+        "nor have you any friend or helper","he will bring in your place another people",
+        "everyone must bear the consequence","shall i seek a lord other than","spend for god's cause",
     ],
-    "sad":         ["hellfire", "fight them", "kill", "disbelievers", "punishment"],
-    "lonely":      ["hellfire", "fight", "kill", "disbelievers", "punishment", "gathered before", "day of judgement"],
-    "heartbroken": ["hellfire", "fight", "kill", "disbelievers", "punishment"],
-    "angry":       ["hellfire", "fight them", "kill", "gathered before", "day of judgement"],
+    "sad":         ["hellfire","fight them","kill","disbelievers","punishment"],
+    "lonely":      ["hellfire","fight","kill","disbelievers","punishment","gathered before","day of judgement"],
+    "heartbroken": ["hellfire","fight","kill","disbelievers","punishment"],
+    "angry":       ["hellfire","fight them","kill","gathered before","day of judgement"],
     "tired":       [
-        "fighting for the cause", "others who may be fighting",
-        "praying at dawn for god", "seeking god's bounty",
-        "hellfire", "fight", "kill", "disbelievers", "punishment",
+        "fighting for the cause","others who may be fighting","praying at dawn for god",
+        "seeking god's bounty","hellfire","fight","kill","disbelievers","punishment",
     ],
 }
 
-# Global journal-context blocklist — wrong for ANY personal emotional entry
 PERSONAL_JOURNAL_BLOCKLIST = [
-    "no bearer of a burden", "bear the burden of another",
-    "burden-bearer shall bear", "over-laden soul",
-    "everyone must bear the consequence",
-    "appointed time has come", "god will not grant a reprieve",
-    "he will bring in your place another people",
-    "cannot defeat his purpose",
-    "nor have you any friend or helper besides god",
-    "niggardly", "whoever stints", "spend for god's cause",
-    "shall i seek a lord other than",
-    "strike their necks", "cast terror", "smite",
-    "prisoners of war", "taken captive",
-    "disperse in the land", "when the prayer is ended",
-    "stand up praying for nearly", "two-thirds of the night",
-    "praying at dawn for god",
+    "no bearer of a burden","bear the burden of another","burden-bearer shall bear","over-laden soul",
+    "everyone must bear the consequence","appointed time has come","god will not grant a reprieve",
+    "he will bring in your place another people","cannot defeat his purpose",
+    "nor have you any friend or helper besides god","niggardly","whoever stints","spend for god's cause",
+    "shall i seek a lord other than","strike their necks","cast terror","smite",
+    "prisoners of war","taken captive","disperse in the land","when the prayer is ended",
+    "stand up praying for nearly","two-thirds of the night","praying at dawn for god",
 ]
-
-def passes_journal_check(idx: int) -> bool:
-    text = str(df.iloc[idx]['ayah_en']).lower()
-    return not any(phrase in text for phrase in PERSONAL_JOURNAL_BLOCKLIST)
 
 def is_eligible_ayah(idx: int, emotion: str) -> bool:
     text = str(df.iloc[idx]['ayah_en']).lower()
@@ -347,26 +320,20 @@ def match_ayahs(request: EntryRequest):
 
     emotion = detect_emotion(request.entry)
     spiritual_query = rewrite_as_spiritual_query(request.entry, emotion)
-
-    # Encode both: spiritual query (theme) + raw entry (context)
     query_embedding = model.encode(spiritual_query, convert_to_tensor=True)
     entry_embedding = model.encode(request.entry, convert_to_tensor=True)
-
     candidate_indices = get_candidate_indices(emotion)
     candidate_embeddings = [ayah_embeddings[i] for i in candidate_indices]
     c_tensor = torch.stack(candidate_embeddings)
 
-    # Two-stage scoring: 60% theme match + 40% direct entry match
-    # Prevents context-mismatched verses (e.g. accountability verses for "stressed")
-    # from ranking high just because they share a keyword like "burden"
+    # Two-stage scoring: 60% spiritual theme + 40% raw entry context
     query_sims = util.cos_sim(query_embedding, c_tensor)[0].tolist()
     entry_sims = util.cos_sim(entry_embedding, c_tensor)[0].tolist()
     combined_sims = [0.6 * q + 0.4 * e for q, e in zip(query_sims, entry_sims)]
 
     SIMILARITY_THRESHOLD = 0.20
     threshold_filtered = [
-        (ci, ce, score) for ci, ce, score
-        in zip(candidate_indices, candidate_embeddings, combined_sims)
+        (ci, ce, score) for ci, ce, score in zip(candidate_indices, candidate_embeddings, combined_sims)
         if score >= SIMILARITY_THRESHOLD
     ]
     print(f"Similarity filter: {len(candidate_indices)} → {len(threshold_filtered)} candidates")
@@ -374,7 +341,6 @@ def match_ayahs(request: EntryRequest):
     if len(threshold_filtered) < request.top_n * 3:
         top_k = sorted(zip(candidate_indices, candidate_embeddings, combined_sims), key=lambda x: -x[2])
         threshold_filtered = [(ci, ce, s) for ci, ce, s in top_k[:max(request.top_n * 5, 15)]]
-        print(f"Threshold relaxed — using top {len(threshold_filtered)}")
 
     filtered_indices = [x[0] for x in threshold_filtered]
     filtered_embeds = [x[1] for x in threshold_filtered]

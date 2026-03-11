@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Heart Patterns · مع القرآن</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Cinzel:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --gold-dim: rgba(201,168,76,0.12);
+      --gold-glow: rgba(201,168,76,0.25);
+      --bg: #080808;
+      --surface: #0e0e0e;
+      --surface2: #141414;
+      --surface3: #1a1a1a;
+      --border: rgba(201,168,76,0.10);
+      --border-hover: rgba(201,168,76,0.28);
+      --text: #e8e0d0;
+      --text-muted: #7a7060;
+      --text-dim: #3a3530;
+      --green: #4a8c5c;
+      --red: #8c4a4a;
+      --teal: #4a7a8c;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 50% -10%,rgba(201,168,76,0.05) 0%,transparent 70%),radial-gradient(ellipse 40% 60% at 90% 100%,rgba(201,168,76,0.03) 0%,transparent 60%);pointer-events:none;z-index:0}
+
+    .wrapper{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 24px 80px}
+
+    /* ── Nav ── */
+    .top-nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0 0}
+    .nav-link{font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:0.18em;color:var(--text-muted);text-decoration:none;text-transform:uppercase;transition:color 0.3s;display:flex;align-items:center;gap:6px;padding:8px 4px}
+    .nav-link:hover{color:var(--gold)}
+    .nav-link::before{content:'';display:block;width:16px;height:1px;background:currentColor;transition:width 0.3s}
+    .nav-link:hover::before{width:24px}
+
+    /* ── Header ── */
+    header{padding:12px 0 32px;text-align:center}
+    .header-ornament{display:block;font-size:1.2rem;color:var(--gold);opacity:0.45;margin-bottom:14px;letter-spacing:0.3em}
+    .title-arabic{font-family:'Noto Naskh Arabic',serif;font-size:1.6rem;color:var(--gold);direction:rtl;display:block;margin-bottom:4px;text-shadow:0 0 40px rgba(201,168,76,0.35)}
+    .title-english{font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.35em;color:var(--text-muted);text-transform:uppercase}
+    .header-line{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:20px auto 0}
+
+    /* ── Month nav ── */
+    .month-nav{display:flex;align-items:center;justify-content:center;gap:20px;margin:32px 0 28px}
+    .month-btn{background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.2em;padding:8px 18px;border-radius:2px;cursor:pointer;transition:all 0.3s;text-transform:uppercase}
+    .month-btn:hover{border-color:var(--gold);color:var(--gold)}
+    .month-label{font-family:'Cinzel',serif;font-size:0.85rem;letter-spacing:0.25em;color:var(--text);text-transform:uppercase;min-width:160px;text-align:center}
+
+    /* ── Summary tiles ── */
+    .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2px;margin-bottom:28px}
+    .tile{background:var(--surface2);border:1px solid var(--border);padding:22px 20px;position:relative;overflow:hidden;transition:border-color 0.3s}
+    .tile:hover{border-color:var(--border-hover)}
+    .tile::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;transition:opacity 0.4s}
+    .tile:hover::before{opacity:0.5}
+    .tile-value{font-family:'Cinzel',serif;font-size:2rem;color:var(--gold);display:block;line-height:1;margin-bottom:6px}
+    .tile-value.score{font-size:1.6rem}
+    .tile-value.trend-improving{color:#4a8c5c}
+    .tile-value.trend-declining{color:#8c4a4a}
+    .tile-label{font-size:0.68rem;letter-spacing:0.2em;color:var(--text-muted);text-transform:uppercase;font-family:'Cinzel',serif}
+    .tile-sub{font-size:0.75rem;color:var(--text-dim);margin-top:4px;font-style:italic}
+
+    /* ── Section heading ── */
+    .section-head{display:flex;align-items:center;gap:16px;margin:32px 0 16px}
+    .section-head span{font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:0.3em;color:var(--text-dim);text-transform:uppercase;white-space:nowrap}
+    .section-head::before,.section-head::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+
+    /* ── Calendar heat-map ── */
+    .calendar-wrap{background:var(--surface2);border:1px solid var(--border);padding:24px;margin-bottom:2px}
+    .cal-month-label{font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;margin-bottom:14px}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+    .cal-dow{font-family:'Cinzel',serif;font-size:0.5rem;letter-spacing:0.15em;color:var(--text-dim);text-align:center;padding-bottom:6px;text-transform:uppercase}
+    .cal-day{aspect-ratio:1;border-radius:2px;background:var(--surface3);border:1px solid var(--text-dim);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:default;transition:all 0.2s;position:relative}
+    .cal-day.empty{background:transparent;border-color:transparent}
+    .cal-day.positive{background:rgba(74,140,92,0.25);border-color:rgba(74,140,92,0.4)}
+    .cal-day.negative{background:rgba(140,74,74,0.2);border-color:rgba(140,74,74,0.35)}
+    .cal-day.neutral{background:rgba(74,122,140,0.15);border-color:rgba(74,122,140,0.3)}
+    .cal-day-num{font-size:0.6rem;color:var(--text-muted);font-family:'Cinzel',serif}
+    .cal-day-dot{width:5px;height:5px;border-radius:50%;margin-top:2px}
+    .cal-day.positive .cal-day-dot{background:#4a8c5c}
+    .cal-day.negative .cal-day-dot{background:#8c4a4a}
+    .cal-day.neutral .cal-day-dot{background:#4a7a8c}
+    .cal-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--surface3);border:1px solid var(--border-hover);padding:6px 10px;border-radius:2px;white-space:nowrap;font-size:0.65rem;color:var(--gold);z-index:10;pointer-events:none;font-family:'Cinzel',serif;letter-spacing:0.1em}
+    .cal-day:hover .cal-tooltip{display:block}
+
+    /* ── Bar chart ── */
+    .chart-wrap{background:var(--surface2);border:1px solid var(--border);padding:24px;margin-bottom:2px}
+    canvas{max-height:220px}
+
+    /* ── Emotion breakdown pills ── */
+    .emotion-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+    .emo-pill{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);padding:8px 14px;border-radius:2px;transition:border-color 0.3s;font-size:0.78rem}
+    .emo-pill:hover{border-color:var(--border-hover)}
+    .emo-pill-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .emo-pill-name{font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase}
+    .emo-pill-count{color:var(--gold);font-family:'Cinzel',serif;font-size:0.75rem;margin-left:auto;padding-left:10px}
+    .emo-bar-wrap{flex:1;height:3px;background:var(--surface3);border-radius:1px;min-width:40px}
+    .emo-bar{height:100%;border-radius:1px;background:var(--gold);transition:width 0.6s ease}
+
+    /* ── Streaks ── */
+    .streak-row{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:28px}
+    .streak-card{background:var(--surface2);border:1px solid var(--border);padding:20px;text-align:center}
+    .streak-num{font-family:'Cinzel',serif;font-size:2.4rem;color:var(--gold);display:block;line-height:1}
+    .streak-label{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.2em;color:var(--text-muted);text-transform:uppercase;margin-top:6px;display:block}
+    .streak-fire{font-size:1.2rem;margin-bottom:4px}
+
+    /* ── Month wellness sparkline ── */
+    .sparkline-wrap{background:var(--surface2);border:1px solid var(--border);padding:24px;margin-bottom:28px}
+    .sparkline-label{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;margin-bottom:14px}
+
+    /* ── Empty state ── */
+    .empty-state{text-align:center;padding:60px 0;color:var(--text-muted);font-style:italic;font-size:1rem}
+
+    /* ── Loading ── */
+    .loading-state{text-align:center;padding:60px 0}
+    .loading-dots{display:inline-flex;gap:6px;margin-bottom:14px}
+    .loading-dots span{width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:0.4;animation:pulse 1.2s ease-in-out infinite}
+    .loading-dots span:nth-child(2){animation-delay:0.2s}
+    .loading-dots span:nth-child(3){animation-delay:0.4s}
+    .loading-text{font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.25em;color:var(--text-dim);text-transform:uppercase}
+
+    @keyframes pulse{0%,100%{opacity:0.2;transform:scale(0.85)}50%{opacity:1;transform:scale(1)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    .fade-up{animation:fadeUp 0.5s ease forwards}
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <nav class="top-nav">
+    <a href="index.html" class="nav-link">Journal</a>
+    <a href="history.html" class="nav-link">History</a>
+  </nav>
+
+  <header>
+    <span class="header-ornament">✦ ✦ ✦</span>
+    <span class="title-arabic">أنماط القلب</span>
+    <span class="title-english">Heart Patterns</span>
+    <div class="header-line"></div>
+  </header>
+
+  <div class="month-nav">
+    <button class="month-btn" onclick="shiftMonth(-1)">← Prev</button>
+    <span class="month-label" id="monthLabel">—</span>
+    <button class="month-btn" onclick="shiftMonth(1)">Next →</button>
+  </div>
+
+  <div id="mainContent">
+    <div class="loading-state">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <div class="loading-text">Reading your heart's patterns…</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const BASE = "http://localhost:8000";
+let currentDate = new Date();
+let currentMonth = currentDate.toISOString().slice(0, 7); // "YYYY-MM"
+let sparklineChart = null;
+let barChart = null;
+
+const EMOTION_COLORS = {
+  peaceful:"#4a8c5c", happy:"#8c7a4a", hopeful:"#4a7a8c",
+  grateful:"#5c8c4a", content:"#7a8c4a", reflective:"#4a5c8c",
+  sad:"#8c4a4a", anxious:"#8c5c4a", stressed:"#8c4a6a",
+  angry:"#8c3a3a", lonely:"#6a4a8c", heartbroken:"#8c4a5c",
+  tired:"#6a6a6a", confused:"#7a6a4a"
+};
+
+function monthDisplayName(ym) {
+  const [y, m] = ym.split("-");
+  const d = new Date(+y, +m - 1, 1);
+  return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+}
+
+function shiftMonth(delta) {
+  const [y, m] = currentMonth.split("-").map(Number);
+  const d = new Date(y, m - 1 + delta, 1);
+  currentMonth = d.toISOString().slice(0, 7);
+  document.getElementById("monthLabel").textContent = monthDisplayName(currentMonth);
+  loadAll();
+}
+
+async function loadAll() {
+  document.getElementById("mainContent").innerHTML = `
+    <div class="loading-state">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <div class="loading-text">Reading your heart's patterns…</div>
+    </div>`;
+
+  try {
+    const [monthly, streaks, allMonths] = await Promise.all([
+      fetch(`${BASE}/analytics/monthly?month=${currentMonth}`).then(r => r.ok ? r.json() : null),
+      fetch(`${BASE}/analytics/streaks`).then(r => r.ok ? r.json() : null),
+      fetch(`${BASE}/analytics/all-months`).then(r => r.ok ? r.json() : [])
+    ]);
+
+    if (!monthly) {
+      document.getElementById("mainContent").innerHTML = `<div class="empty-state">No entries yet for this month.<br><br>Begin your reflection on the <a href="index.html" style="color:var(--gold)">journal page</a>.</div>`;
+      return;
+    }
+
+    renderAll(monthly, streaks, allMonths);
+  } catch (e) {
+    document.getElementById("mainContent").innerHTML = `<div class="empty-state" style="color:#7a4040">Could not connect to backend.</div>`;
+  }
+}
+
+function renderAll(monthly, streaks, allMonths) {
+  const trendIcon = monthly.mood_trend === "improving" ? "↑" : monthly.mood_trend === "declining" ? "↓" : "→";
+  const trendClass = monthly.mood_trend === "improving" ? "trend-improving" : monthly.mood_trend === "declining" ? "trend-declining" : "";
+
+  const html = `
+    <!-- Summary tiles -->
+    <div class="tiles fade-up">
+      <div class="tile">
+        <span class="tile-value score">${monthly.wellness_score}</span>
+        <span class="tile-label">Wellness Score</span>
+        <div class="tile-sub">out of 100</div>
+      </div>
+      <div class="tile">
+        <span class="tile-value">${monthly.total_days_active}</span>
+        <span class="tile-label">Days Active</span>
+        <div class="tile-sub">this month</div>
+      </div>
+      <div class="tile">
+        <span class="tile-value">${monthly.positive_days}</span>
+        <span class="tile-label">Positive Days</span>
+        <div class="tile-sub">${monthly.total_days_active > 0 ? Math.round(monthly.positive_days / monthly.total_days_active * 100) : 0}% of active</div>
+      </div>
+      <div class="tile">
+        <span class="tile-value ${trendClass}">${trendIcon}</span>
+        <span class="tile-label">Trend</span>
+        <div class="tile-sub">${monthly.mood_trend}</div>
+      </div>
+      <div class="tile">
+        <span class="tile-value" style="font-size:1rem;padding-top:4px">${monthly.top_ayah_surah}</span>
+        <span class="tile-label">Top Surah</span>
+        <div class="tile-sub">shown most</div>
+      </div>
+    </div>
+
+    <!-- Streak cards -->
+    ${streaks ? `
+    <div class="streak-row fade-up">
+      <div class="streak-card">
+        <div class="streak-fire">🔥</div>
+        <span class="streak-num">${streaks.current_streak}</span>
+        <span class="streak-label">Current Streak</span>
+      </div>
+      <div class="streak-card">
+        <div class="streak-fire">✦</div>
+        <span class="streak-num">${streaks.best_streak}</span>
+        <span class="streak-label">Best Streak Ever</span>
+      </div>
+    </div>` : ""}
+
+    <!-- Calendar -->
+    <div class="section-head"><span>Daily Mood Map</span></div>
+    <div class="calendar-wrap fade-up" id="calWrap"></div>
+
+    <!-- Emotion breakdown bar chart -->
+    <div class="section-head"><span>Emotion Breakdown</span></div>
+    <div class="chart-wrap fade-up">
+      <canvas id="emotionChart"></canvas>
+    </div>
+    <div class="emotion-grid fade-up" id="emotionPills"></div>
+
+    <!-- Monthly wellness sparkline -->
+    ${allMonths.length > 1 ? `
+    <div class="section-head"><span>Wellness Over Time</span></div>
+    <div class="sparkline-wrap fade-up">
+      <div class="sparkline-label">Monthly wellness score</div>
+      <canvas id="sparkChart" style="max-height:160px"></canvas>
+    </div>` : ""}
+  `;
+
+  document.getElementById("mainContent").innerHTML = html;
+
+  renderCalendar(monthly);
+  renderBarChart(monthly.emotion_breakdown);
+  renderEmotionPills(monthly.emotion_breakdown);
+  if (allMonths.length > 1) renderSparkline(allMonths);
+}
+
+function renderCalendar(monthly) {
+  const wrap = document.getElementById("calWrap");
+  if (!wrap) return;
+
+  const [y, m] = monthly.month.split("-").map(Number);
+  const firstDay = new Date(y, m - 1, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(y, m, 0).getDate();
+
+  // Build date->mood map
+  const moodMap = {};
+  monthly.daily_moods.forEach(d => {
+    moodMap[d.date] = d;
+  });
+
+  let cal = `<div class="cal-month-label">${monthDisplayName(monthly.month)}</div><div class="cal-grid">`;
+  const dows = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+  dows.forEach(d => cal += `<div class="cal-dow">${d}</div>`);
+
+  // Empty cells
+  for (let i = 0; i < firstDay; i++) cal += `<div class="cal-day empty"></div>`;
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${y}-${String(m).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+    const mood = moodMap[dateStr];
+    let cls = "";
+    let tip = "";
+    if (mood) {
+      cls = mood.is_positive ? "positive" : (["reflective","confused"].includes(mood.emotion) ? "neutral" : "negative");
+      tip = `<div class="cal-tooltip">${mood.emotion} · ${mood.entry_count} entr${mood.entry_count===1?"y":"ies"}</div>`;
+    }
+    cal += `<div class="cal-day ${cls}">${tip}<span class="cal-day-num">${day}</span>${mood ? '<div class="cal-day-dot"></div>' : ""}</div>`;
+  }
+  cal += `</div>`;
+  wrap.innerHTML = cal;
+}
+
+function renderBarChart(breakdown) {
+  if (barChart) { barChart.destroy(); barChart = null; }
+  if (!breakdown || !Object.keys(breakdown).length) return;
+  const sorted = Object.entries(breakdown).sort((a, b) => b[1] - a[1]);
+  const labels = sorted.map(e => e[0]);
+  const values = sorted.map(e => e[1]);
+  const colors = labels.map(l => EMOTION_COLORS[l] || "#c9a84c");
+
+  const ctx = document.getElementById("emotionChart");
+  if (!ctx) return;
+
+  barChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: colors.map(c => c + "55"),
+        borderColor: colors,
+        borderWidth: 1,
+        borderRadius: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: { label: ctx => ` ${ctx.parsed.y} entr${ctx.parsed.y===1?"y":"ies"}` }
+      }},
+      scales: {
+        x: { ticks: { color: "#7a7060", font: { family: "Cinzel", size: 10 } }, grid: { color: "rgba(255,255,255,0.03)" } },
+        y: { ticks: { color: "#7a7060", font: { family: "Cinzel", size: 10 }, stepSize: 1 }, grid: { color: "rgba(255,255,255,0.04)" } }
+      }
+    }
+  });
+}
+
+function renderEmotionPills(breakdown) {
+  const el = document.getElementById("emotionPills");
+  if (!el || !breakdown) return;
+  const max = Math.max(...Object.values(breakdown));
+  const sorted = Object.entries(breakdown).sort((a,b) => b[1]-a[1]);
+  el.innerHTML = sorted.map(([emo, cnt]) => `
+    <div class="emo-pill">
+      <div class="emo-pill-dot" style="background:${EMOTION_COLORS[emo]||"#c9a84c"}"></div>
+      <span class="emo-pill-name">${emo}</span>
+      <div class="emo-bar-wrap"><div class="emo-bar" style="width:${Math.round(cnt/max*100)}%;background:${EMOTION_COLORS[emo]||"#c9a84c"}"></div></div>
+      <span class="emo-pill-count">${cnt}</span>
+    </div>`).join("");
+}
+
+function renderSparkline(allMonths) {
+  if (sparklineChart) { sparklineChart.destroy(); sparklineChart = null; }
+  const ctx = document.getElementById("sparkChart");
+  if (!ctx) return;
+  const labels = allMonths.map(m => {
+    const [y, mo] = m.month.split("-");
+    return new Date(+y, +mo-1, 1).toLocaleDateString("en-US",{month:"short",year:"2-digit"});
+  });
+  const values = allMonths.map(m => m.wellness_score);
+
+  sparklineChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        borderColor: "#c9a84c",
+        backgroundColor: "rgba(201,168,76,0.07)",
+        borderWidth: 1.5,
+        pointBackgroundColor: "#c9a84c",
+        pointRadius: 4,
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: { label: ctx => ` Wellness: ${ctx.parsed.y}` }
+      }},
+      scales: {
+        x: { ticks: { color: "#7a7060", font: { family:"Cinzel", size:9 } }, grid: { color:"rgba(255,255,255,0.03)" } },
+        y: { min: 0, max: 100, ticks: { color:"#7a7060", font:{ family:"Cinzel", size:9 }, stepSize:20 }, grid: { color:"rgba(255,255,255,0.04)" } }
+      }
+    }
+  });
+}
+
+// Init
+document.getElementById("monthLabel").textContent = monthDisplayName(currentMonth);
+loadAll();
+</script>
+</body>
+</html>
