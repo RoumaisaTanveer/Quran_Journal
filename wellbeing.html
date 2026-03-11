@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wellbeing Tracker — مع القرآن</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cinzel:wght@400;500;600&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: rgba(201,168,76,0.12);
+    --bg: #070709;
+    --bg2: #0d0d12;
+    --bg3: #13131a;
+    --text: #e8e0d0;
+    --text-dim: #8a8070;
+    --text-muted: #4a4540;
+    --border: rgba(201,168,76,0.12);
+    --green: #6dbf8a;
+    --red: #c97070;
+    --blue: #7098c9;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.6;
+  }
+
+  /* NAV */
+  .top-nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: rgba(7,7,9,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-brand {
+    font-family: 'Noto Naskh Arabic', serif;
+    font-size: 1.2rem; color: var(--gold);
+  }
+
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a {
+    font-family: 'Cinzel', serif; font-size: 0.65rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-dim); text-decoration: none; transition: color 0.3s;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+
+  /* PAGE HEADER */
+  .page-header {
+    position: relative; z-index: 1;
+    padding: 3rem 2.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(to bottom, rgba(201,168,76,0.03), transparent);
+  }
+
+  .page-header-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 1.5rem;
+  }
+
+  .page-label {
+    font-family: 'Cinzel', serif; font-size: 0.6rem;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 0.5rem; display: block;
+  }
+
+  .page-title {
+    font-size: 2rem; font-weight: 300; color: var(--text);
+    line-height: 1.2;
+  }
+
+  .page-arabic {
+    font-family: 'Noto Naskh Arabic', serif;
+    font-size: 1.4rem; color: var(--gold); opacity: 0.6;
+    direction: rtl;
+  }
+
+  /* PERIOD SELECTOR */
+  .period-selector {
+    display: flex; gap: 0.4rem;
+  }
+
+  .period-btn {
+    font-family: 'Cinzel', serif; font-size: 0.6rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.4rem 0.9rem;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-dim); cursor: pointer; transition: all 0.2s;
+  }
+
+  .period-btn.active, .period-btn:hover {
+    border-color: var(--gold); color: var(--gold); background: var(--gold-dim);
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    position: relative; z-index: 1;
+    max-width: 1200px; margin: 0 auto;
+    padding: 2rem 2.5rem;
+  }
+
+  /* STAT CARDS */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border);
+    background: var(--border);
+  }
+
+  .stat-card {
+    background: var(--bg2);
+    padding: 1.8rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .stat-card:hover { background: var(--bg3); }
+
+  .stat-card::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+
+  .stat-card:hover::after { opacity: 1; }
+
+  .stat-label {
+    font-family: 'Cinzel', serif; font-size: 0.55rem;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 0.8rem; display: block;
+  }
+
+  .stat-value {
+    font-size: 2.2rem; font-weight: 300;
+    color: var(--gold-light); line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .stat-sub {
+    font-size: 0.78rem; color: var(--text-dim);
+    font-style: italic;
+  }
+
+  /* CHARTS GRID */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } }
+
+  .chart-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 1.8rem;
+    position: relative;
+  }
+
+  .chart-card.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .chart-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 1.5rem;
+  }
+
+  .chart-title {
+    font-family: 'Cinzel', serif; font-size: 0.65rem;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 0.3rem; display: block;
+  }
+
+  .chart-sub {
+    font-size: 0.82rem; color: var(--text-dim); font-style: italic;
+  }
+
+  .chart-container {
+    position: relative; width: 100%;
+  }
+
+  /* EMOTION HISTORY LIST */
+  .history-section {
+    margin-top: 1.5rem;
+  }
+
+  .history-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1rem; padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .history-title {
+    font-family: 'Cinzel', serif; font-size: 0.65rem;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold);
+  }
+
+  .history-list {
+    display: flex; flex-direction: column; gap: 0.8rem;
+  }
+
+  .history-row {
+    display: grid;
+    grid-template-columns: 80px 1fr auto auto;
+    gap: 1.2rem; align-items: center;
+    padding: 1rem 1.2rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    transition: border-color 0.3s;
+  }
+
+  .history-row:hover { border-color: rgba(201,168,76,0.25); }
+
+  .history-date {
+    font-family: 'Cinzel', serif; font-size: 0.58rem;
+    letter-spacing: 0.1em; color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .history-entry {
+    font-size: 0.85rem; color: var(--text-dim);
+    font-style: italic;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .emotion-tag {
+    font-family: 'Cinzel', serif; font-size: 0.55rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.25rem 0.7rem; border: 1px solid;
+    white-space: nowrap;
+  }
+
+  .emotion-tag.positive { color: var(--green); border-color: rgba(109,191,138,0.3); background: rgba(109,191,138,0.08); }
+  .emotion-tag.negative { color: var(--red); border-color: rgba(201,112,112,0.3); background: rgba(201,112,112,0.08); }
+  .emotion-tag.neutral  { color: var(--blue); border-color: rgba(112,152,201,0.3); background: rgba(112,152,201,0.08); }
+
+  .shift-arrow {
+    font-size: 1rem; color: var(--text-muted);
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center; padding: 4rem 2rem;
+    color: var(--text-dim);
+  }
+
+  .empty-arabic {
+    font-family: 'Noto Naskh Arabic', serif;
+    font-size: 2rem; color: var(--gold); opacity: 0.4;
+    margin-bottom: 1rem; direction: rtl;
+  }
+
+  .empty-state p { font-size: 0.9rem; font-style: italic; margin-bottom: 1.5rem; }
+
+  .btn-go {
+    font-family: 'Cinzel', serif; font-size: 0.65rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold); border: 1px solid var(--border);
+    padding: 0.6rem 1.5rem; text-decoration: none;
+    transition: all 0.3s; display: inline-block;
+  }
+
+  .btn-go:hover { border-color: var(--gold); background: var(--gold-dim); }
+
+  /* INSIGHT CARD */
+  .insight-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    padding: 1.5rem 2rem;
+    margin-top: 1.5rem;
+    display: flex; gap: 1.5rem; align-items: flex-start;
+  }
+
+  .insight-icon { font-size: 1.5rem; flex-shrink: 0; }
+
+  .insight-text h4 {
+    font-size: 0.9rem; font-weight: 500; color: var(--gold-light);
+    margin-bottom: 0.4rem;
+  }
+
+  .insight-text p {
+    font-size: 0.85rem; color: var(--text-dim); line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* Loading */
+  .loading {
+    text-align: center; padding: 3rem;
+    color: var(--text-muted); font-style: italic; font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="nav-brand">مع القرآن</div>
+  <ul class="nav-links">
+    <li><a href="landing.html">Home</a></li>
+    <li><a href="index.html">Journal</a></li>
+    <li><a href="history.html">History</a></li>
+    <li><a href="wellbeing.html" class="active">Wellbeing</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <span class="page-label">Your Journey</span>
+      <h1 class="page-title">Emotional Wellbeing</h1>
+      <div class="page-arabic">رحلتك العاطفية</div>
+    </div>
+    <div class="period-selector">
+      <button class="period-btn" data-days="7">7 Days</button>
+      <button class="period-btn active" data-days="30">30 Days</button>
+      <button class="period-btn" data-days="90">All Time</button>
+    </div>
+  </div>
+</div>
+
+<main class="main" id="mainContent">
+  <div class="loading">Loading your journey...</div>
+</main>
+
+<script>
+const API = 'http://localhost:8000';
+
+// Emotion metadata
+const EMOTION_META = {
+  grateful:    { color: '#c9a84c', category: 'positive', label: 'Grateful' },
+  hopeful:     { color: '#6dbf8a', category: 'positive', label: 'Hopeful' },
+  peaceful:    { color: '#7ec8c8', category: 'positive', label: 'Peaceful' },
+  happy:       { color: '#e8c97a', category: 'positive', label: 'Happy' },
+  content:     { color: '#a8c87e', category: 'positive', label: 'Content' },
+  reflective:  { color: '#7098c9', category: 'neutral',  label: 'Reflective' },
+  confused:    { color: '#9070c9', category: 'neutral',  label: 'Confused' },
+  anxious:     { color: '#c98870', category: 'negative', label: 'Anxious' },
+  stressed:    { color: '#c97070', category: 'negative', label: 'Stressed' },
+  sad:         { color: '#8898c9', category: 'negative', label: 'Sad' },
+  lonely:      { color: '#a870c9', category: 'negative', label: 'Lonely' },
+  heartbroken: { color: '#c9708a', category: 'negative', label: 'Heartbroken' },
+  angry:       { color: '#c96060', category: 'negative', label: 'Angry' },
+  tired:       { color: '#9888a0', category: 'negative', label: 'Tired' },
+};
+
+const POSITIVE = new Set(['grateful','hopeful','peaceful','happy','content']);
+const NEGATIVE = new Set(['anxious','stressed','sad','lonely','heartbroken','angry','tired']);
+
+let allHistory = [];
+let activeDays = 30;
+
+function getCategory(emotion) {
+  return EMOTION_META[emotion]?.category || 'neutral';
+}
+
+function filterByDays(history, days) {
+  if (days === 90) return history;
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  return history.filter(item => new Date(item.timestamp) >= cutoff);
+}
+
+function computeStats(history) {
+  const total = history.length;
+  const positiveCount = history.filter(h => POSITIVE.has(h.emotion_before)).length;
+  const improvements = history.filter(h =>
+    h.emotion_after && POSITIVE.has(h.emotion_after) && NEGATIVE.has(h.emotion_before)
+  ).length;
+
+  const emotionFreq = {};
+  history.forEach(h => {
+    emotionFreq[h.emotion_before] = (emotionFreq[h.emotion_before] || 0) + 1;
+  });
+  const dominant = Object.entries(emotionFreq).sort((a,b) => b[1]-a[1])[0];
+
+  return { total, positiveCount, improvements, dominant, emotionFreq };
+}
+
+function generateInsight(stats, history) {
+  if (!stats.total) return null;
+  const posRate = Math.round((stats.positiveCount / stats.total) * 100);
+  const impRate = stats.improvements;
+
+  if (posRate >= 60) return {
+    icon: '🌿',
+    title: 'Your heart is in a good place',
+    text: `${posRate}% of your entries reflect a positive emotional state. Alhamdulillah — keep nurturing this through your journal practice.`
+  };
+  if (impRate >= 3) return {
+    icon: '🤍',
+    title: 'The Quran is moving your heart',
+    text: `${impRate} times you came with a heavy heart and left feeling lighter. That shift is the Quran doing what it does best.`
+  };
+  if (stats.dominant && NEGATIVE.has(stats.dominant[0])) return {
+    icon: '🌙',
+    title: `You've been feeling ${stats.dominant[0]} lately`,
+    text: `It's okay. The fact that you're here, journaling and seeking, is itself a form of worship. Allah sees your effort. وَمَن يَتَوَكَّلْ عَلَى ٱللَّهِ فَهُوَ حَسْبُهُۥ`
+  };
+  return {
+    icon: '✦',
+    title: 'Keep returning',
+    text: 'Every entry is a step closer. The Quran rewards those who keep coming back to it, in whatever state they arrive.'
+  };
+}
+
+function renderStats(stats) {
+  const dominant = stats.dominant;
+  const posRate = stats.total ? Math.round((stats.positiveCount / stats.total) * 100) : 0;
+  return `
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-label">Total Entries</span>
+        <div class="stat-value">${stats.total}</div>
+        <div class="stat-sub">journal reflections</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Positive States</span>
+        <div class="stat-value">${posRate}%</div>
+        <div class="stat-sub">of your entries</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Heart Shifts</span>
+        <div class="stat-value">${stats.improvements}</div>
+        <div class="stat-sub">entries where reading helped</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Most Common Feeling</span>
+        <div class="stat-value" style="font-size:1.3rem; text-transform:capitalize; margin-top:0.3rem">
+          ${dominant ? dominant[0] : '—'}
+        </div>
+        <div class="stat-sub">${dominant ? dominant[1] + ' entries' : 'no data yet'}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderInsight(insight) {
+  if (!insight) return '';
+  return `
+    <div class="insight-card">
+      <div class="insight-icon">${insight.icon}</div>
+      <div class="insight-text">
+        <h4>${insight.title}</h4>
+        <p>${insight.text}</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderHistoryList(history) {
+  if (!history.length) return '';
+  const recent = [...history].reverse().slice(0, 8);
+  const rows = recent.map(item => {
+    const date = new Date(item.timestamp);
+    const dateStr = date.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+    const cat = getCategory(item.emotion_before);
+    const afterCat = item.emotion_after ? getCategory(item.emotion_after) : null;
+    const truncated = item.entry.length > 60 ? item.entry.slice(0, 60) + '…' : item.entry;
+
+    return `
+      <div class="history-row">
+        <div class="history-date">${dateStr}</div>
+        <div class="history-entry">${truncated}</div>
+        <span class="emotion-tag ${cat}">${item.emotion_before}</span>
+        ${item.emotion_after ? `
+          <span class="shift-arrow">→</span>
+          <span class="emotion-tag ${afterCat}">${item.emotion_after}</span>
+        ` : '<span class="shift-arrow" style="color:transparent">→</span><span></span>'}
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="history-section">
+      <div class="history-header">
+        <span class="history-title">Recent Entries</span>
+      </div>
+      <div class="history-list">${rows}</div>
+    </div>
+  `;
+}
+
+let lineChart, donutChart, barChart;
+
+function destroyCharts() {
+  [lineChart, donutChart, barChart].forEach(c => { if (c) c.destroy(); });
+}
+
+function renderCharts(history) {
+  destroyCharts();
+
+  // ── LINE CHART: emotion score over time ──
+  const sorted = [...history].sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+  const lineLabels = sorted.map(h => {
+    const d = new Date(h.timestamp);
+    return d.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+  });
+
+  function emotionScore(emotion) {
+    if (POSITIVE.has(emotion)) return 1;
+    if (NEGATIVE.has(emotion)) return -1;
+    return 0;
+  }
+
+  const scoresBefore = sorted.map(h => emotionScore(h.emotion_before));
+  const scoresAfter  = sorted.map(h => h.emotion_after ? emotionScore(h.emotion_after) : null);
+
+  const lineCtx = document.getElementById('lineChart').getContext('2d');
+  lineChart = new Chart(lineCtx, {
+    type: 'line',
+    data: {
+      labels: lineLabels,
+      datasets: [
+        {
+          label: 'Before Reading',
+          data: scoresBefore,
+          borderColor: 'rgba(201,112,112,0.8)',
+          backgroundColor: 'rgba(201,112,112,0.05)',
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: scoresBefore.map(s => s > 0 ? '#6dbf8a' : s < 0 ? '#c97070' : '#7098c9'),
+          pointRadius: 5,
+          pointHoverRadius: 7,
+        },
+        {
+          label: 'After Reading',
+          data: scoresAfter,
+          borderColor: 'rgba(109,191,138,0.8)',
+          backgroundColor: 'rgba(109,191,138,0.05)',
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: '#6dbf8a',
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          spanGaps: true,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          labels: { color: '#8a8070', font: { family: 'Cormorant Garamond', size: 13 } }
+        },
+        tooltip: {
+          backgroundColor: '#13131a',
+          borderColor: 'rgba(201,168,76,0.3)',
+          borderWidth: 1,
+          titleColor: '#c9a84c',
+          bodyColor: '#8a8070',
+          callbacks: {
+            label: ctx => {
+              const v = ctx.raw;
+              if (v === null) return 'No follow-up';
+              return ctx.dataset.label + ': ' + (v > 0 ? 'Positive' : v < 0 ? 'Negative' : 'Neutral');
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#4a4540', font: { size: 11 }, maxTicksLimit: 8 },
+          grid: { color: 'rgba(201,168,76,0.05)' }
+        },
+        y: {
+          min: -1.5, max: 1.5,
+          ticks: {
+            color: '#4a4540',
+            callback: v => v === 1 ? 'Positive' : v === 0 ? 'Neutral' : v === -1 ? 'Negative' : '',
+            stepSize: 1,
+          },
+          grid: { color: 'rgba(201,168,76,0.05)' }
+        }
+      }
+    }
+  });
+
+  // ── DONUT CHART: emotion distribution ──
+  const stats = computeStats(history);
+  const freq = stats.emotionFreq;
+  const donutLabels = Object.keys(freq);
+  const donutData = donutLabels.map(e => freq[e]);
+  const donutColors = donutLabels.map(e => EMOTION_META[e]?.color || '#4a4540');
+
+  const donutCtx = document.getElementById('donutChart').getContext('2d');
+  donutChart = new Chart(donutCtx, {
+    type: 'doughnut',
+    data: {
+      labels: donutLabels.map(e => EMOTION_META[e]?.label || e),
+      datasets: [{
+        data: donutData,
+        backgroundColor: donutColors.map(c => c + 'cc'),
+        borderColor: donutColors,
+        borderWidth: 1,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      cutout: '65%',
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            color: '#8a8070',
+            font: { family: 'Cormorant Garamond', size: 13 },
+            padding: 12,
+            boxWidth: 12,
+          }
+        },
+        tooltip: {
+          backgroundColor: '#13131a',
+          borderColor: 'rgba(201,168,76,0.3)',
+          borderWidth: 1,
+          titleColor: '#c9a84c',
+          bodyColor: '#8a8070',
+        }
+      }
+    }
+  });
+
+  // ── BAR CHART: before vs after comparison ──
+  const withAfter = history.filter(h => h.emotion_after);
+  const improvements = withAfter.filter(h => POSITIVE.has(h.emotion_after) && !POSITIVE.has(h.emotion_before)).length;
+  const same = withAfter.filter(h => getCategory(h.emotion_after) === getCategory(h.emotion_before)).length;
+  const declined = withAfter.filter(h => !POSITIVE.has(h.emotion_after) && POSITIVE.has(h.emotion_before)).length;
+  const noChange = withAfter.length - improvements - declined - same;
+
+  const barCtx = document.getElementById('barChart').getContext('2d');
+  barChart = new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Improved after reading', 'Stayed the same', 'No after-reading noted'],
+      datasets: [{
+        data: [improvements, same + noChange, history.length - withAfter.length],
+        backgroundColor: [
+          'rgba(109,191,138,0.7)',
+          'rgba(112,152,201,0.7)',
+          'rgba(74,69,64,0.5)',
+        ],
+        borderColor: ['#6dbf8a', '#7098c9', '#4a4540'],
+        borderWidth: 1,
+        borderRadius: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#13131a',
+          borderColor: 'rgba(201,168,76,0.3)',
+          borderWidth: 1,
+          titleColor: '#c9a84c',
+          bodyColor: '#8a8070',
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#8a8070', font: { family: 'Cormorant Garamond', size: 13 } },
+          grid: { display: false }
+        },
+        y: {
+          ticks: { color: '#4a4540', stepSize: 1 },
+          grid: { color: 'rgba(201,168,76,0.05)' },
+          beginAtZero: true,
+        }
+      }
+    }
+  });
+}
+
+function render(history) {
+  const stats = computeStats(history);
+  const insight = generateInsight(stats, history);
+
+  if (!history.length) {
+    document.getElementById('mainContent').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-arabic">ٱقْرَأْ</div>
+        <p>No journal entries yet. Begin writing to see your emotional journey here.</p>
+        <a href="index.html" class="btn-go">Open the Journal</a>
+      </div>
+    `;
+    return;
+  }
+
+  document.getElementById('mainContent').innerHTML = `
+    ${renderStats(stats)}
+    ${renderInsight(insight)}
+
+    <div class="charts-grid" style="margin-top:1.5rem">
+      <div class="chart-card full-width">
+        <div class="chart-header">
+          <div>
+            <span class="chart-title">Emotional Arc</span>
+            <div class="chart-sub">How your state has shifted before and after each reading</div>
+          </div>
+        </div>
+        <div class="chart-container" style="height:220px">
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <span class="chart-title">Emotion Breakdown</span>
+            <div class="chart-sub">Your most frequent emotional states</div>
+          </div>
+        </div>
+        <div class="chart-container" style="height:260px">
+          <canvas id="donutChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <span class="chart-title">Reading Impact</span>
+            <div class="chart-sub">Did the Quran shift your heart?</div>
+          </div>
+        </div>
+        <div class="chart-container" style="height:260px">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    ${renderHistoryList(history)}
+  `;
+
+  renderCharts(history);
+}
+
+async function loadData() {
+  try {
+    const res = await fetch(`${API}/history`);
+    if (!res.ok) throw new Error('Failed');
+    allHistory = await res.json();
+    const filtered = filterByDays(allHistory, activeDays);
+    render(filtered);
+  } catch(e) {
+    // Use demo data if backend unavailable
+    allHistory = generateDemoData();
+    const filtered = filterByDays(allHistory, activeDays);
+    render(filtered);
+  }
+}
+
+function generateDemoData() {
+  const emotions = ['grateful','anxious','sad','hopeful','stressed','reflective','peaceful','tired','content','lonely'];
+  const afters   = ['peaceful','hopeful','content','grateful',null,'reflective',null,'hopeful',null,'content'];
+  const entries  = [
+    "I realized how much I take for granted...",
+    "My exams are coming and I can't sleep...",
+    "Feeling really low today for no reason...",
+    "Things are hard but I believe it'll get better...",
+    "Too many deadlines, I'm overwhelmed...",
+    "Just sitting by the window thinking...",
+    "Today was such a calm and beautiful day...",
+    "I have no energy left, everything feels heavy...",
+    "Alhamdulillah, I feel at peace with where I am...",
+    "No one really understands how I feel..."
+  ];
+
+  return Array.from({ length: 20 }, (_, i) => {
+    const idx = i % emotions.length;
+    const daysAgo = Math.floor(Math.random() * 28);
+    const d = new Date();
+    d.setDate(d.getDate() - daysAgo);
+    return {
+      entry: entries[idx],
+      emotion_before: emotions[idx],
+      emotion_after: i % 3 === 0 ? afters[idx] : null,
+      comfort: '',
+      matches: [],
+      timestamp: d.toISOString(),
+    };
+  }).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+}
+
+// Period buttons
+document.querySelectorAll('.period-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeDays = parseInt(btn.dataset.days);
+    const filtered = filterByDays(allHistory, activeDays);
+    render(filtered);
+  });
+});
+
+loadData();
+</script>
+</body>
+</html>
