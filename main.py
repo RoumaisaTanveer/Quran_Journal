@@ -15,11 +15,12 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_URL     = os.getenv("OPENROUTER_URL", "https://openrouter.ai/api/v1/chat/completions")
 GPT_MODEL          = os.getenv("GPT_MODEL", "mistralai/mistral-7b-instruct")
 
-DATA_FILE      = Path("data.json")   # persistent storage
+DATA_FILE      = Path("data.json")
 CSV_FILE       = "quran_emotion_tagged.csv"
-SCORE_CUTOFF   = 0.25                # min emotion_score to include ayah
-SIM_THRESHOLD  = 0.20               # min combined similarity score
-TOP_CANDIDATES = 15                  # fallback pool size
+SCORE_CUTOFF   = 0.25
+SIM_THRESHOLD  = 0.20
+TOP_CANDIDATES = 15
+MIN_AYAH_WORDS = 8   # FIX 5: skip fragment ayahs shorter than this
 
 # ── App ──────────────────────────────────────────────────────────────────
 app = FastAPI()
@@ -54,7 +55,7 @@ model = SentenceTransformer('all-MiniLM-L6-v2')
 ayah_embeddings = model.encode(ayahs, convert_to_tensor=True, show_progress_bar=False)
 print(f"✅ {len(ayahs)} ayahs encoded")
 
-# ── Persistent storage (JSON file) ───────────────────────────────────────
+# ── Persistent storage ────────────────────────────────────────────────────
 def _load_data() -> dict:
     if DATA_FILE.exists():
         try:
@@ -246,8 +247,6 @@ def detect_emotion(entry: str) -> str:
     return llm_detect_emotion(entry)
 
 # ── Spiritual query rewriting ─────────────────────────────────────────────
-# Natural first-person language → lands near comfort/mercy verses
-# NOT theological keywords → avoids accountability/battle verses
 SPIRITUAL_QUERIES = {
     "anxious":     "I am overwhelmed with worry and fear please Allah calm my heart give me peace trust and relief from anxiety",
     "stressed":    "I am exhausted and overwhelmed carrying too many responsibilities I need Allah's help to find relief ease and rest",
@@ -267,7 +266,6 @@ SPIRITUAL_QUERIES = {
 
 def rewrite_as_spiritual_query(entry: str, emotion: str) -> str:
     base = SPIRITUAL_QUERIES.get(emotion, "I am seeking comfort guidance and mercy from Allah in my struggles")
-    # Blend with key words from actual entry for better context matching
     words = [w for w in entry.lower().split() if len(w) > 4][:8]
     context = " ".join(words)
     query = f"{base} {context}".strip()
@@ -275,7 +273,8 @@ def rewrite_as_spiritual_query(entry: str, emotion: str) -> str:
     return query
 
 # ── Exclusion lists ───────────────────────────────────────────────────────
-# These are checked against the English translation (lowercase)
+# FIX 1: Shortened phrases to catch more variations
+# FIX 2: Added new dangerous phrases to GLOBAL_EXCLUSIONS
 
 GLOBAL_EXCLUSIONS = [
     # Prophet-specific address
@@ -291,13 +290,33 @@ GLOBAL_EXCLUSIONS = [
     "in the name of allah", "stand up praying for nearly",
     "two-thirds of the night", "when the prayer is ended, disperse",
     "disperse in the land",
-    # Burden-bearing (misread as comfort but is about Judgement Day)
+    # Burden-bearing (Judgement Day)
     "bear another's burden", "no soul shall bear the burden of another",
     # Death timing
     "appointed time has come", "god will not grant a reprieve to a soul",
+
+    # FIX 2: New global exclusions from test results
+    "lest you stone",                        # stoning verse (Ad-Dukhan 19)
+    "stone me to death",                     # stoning variant
+    "slaying your sons",                     # Pharaoh violence (Al-Baqarah 48)
+    "subjected you to grievous",             # torture/violence context
+    "grievous torment",                      # violence context
+    "turn their backs in aversion",          # disbelievers rejecting Quran (Al-Isra 45)
+    "veils over their hearts",               # disbeliever context
+    "afflict their ears with deafness",      # disbeliever context
+    "guard yourselves against the day",      # Judgement Day threat framing
+    "no soul shall in the least avail",      # Judgement Day — no intercession
+    "neither intercession nor ransom",       # Judgement Day
+    "make no excuses",                       # rebuke verse (At-Tawbah 65)
+    "rejected the faith after",              # punishment rebuke
+    "go forth, whether lightly or heavily",  # battle mobilisation (At-Tawbah 40)
+    "strive and struggle",                   # battle framing
+    "fight for the cause of god",            # battle command
+    "urge on the believers",                 # battle command
+    "fend off the power",                    # battle/violence
+    "forgive my father; for he is one of the misguided",  # specific fragment, not comforting
 ]
 
-# Wrong for ANY personal emotional journal entry
 PERSONAL_JOURNAL_BLOCKLIST = [
     # Judgement Day burden verses
     "no bearer of a burden", "bear the burden of another",
@@ -310,12 +329,15 @@ PERSONAL_JOURNAL_BLOCKLIST = [
     "nor have you any friend or helper besides god",
     "you have none besides god to protect", "you have none besides god",
     "none besides god to protect or help",
-    # Charity commands / financial rulings
-    "niggardly", "whoever stints", "spend for god's cause",
-    "let the man of means spend", "spend in accordance with his means",
+    # FIX 1: Shortened charity/financial phrases to catch variations
+    "niggardly", "whoever stints",
+    "for god's cause",           # was "spend for god's cause" — now catches "spending for God's cause", "spent for God's cause" etc
+    "man of means spend",        # was "let the man of means spend"
+    "spend in accordance",       # was "spend in accordance with his means"
     "resources are restricted",
-    # Hollow rhetorical fragments
-    "that is not difficult for god", "that is easy for god",
+    # Hollow rhetorical fragments — FIX 1: shortened
+    "difficult for god",         # was "that is not difficult for god" — now catches "no difficult thing for God"
+    "easy for god",
     "nothing is difficult for god",
     # Polemical challenges
     "shall i seek a lord other than",
@@ -328,19 +350,28 @@ PERSONAL_JOURNAL_BLOCKLIST = [
     "praying at dawn for god",
     # Power declaration without personal comfort
     "to god belongs the kingdom of the heavens and of the earth. he gives life and death",
+    # FIX 2: Additional from test results
+    "we will punish",            # punishment verse (At-Tawbah 65)
+    "they are guilty",           # judgment/condemnation
+    "spent and fought",          # battle framing (Al-Hadid 9)
+    "go down from here as enemies",   # Adam/Iblis expulsion narrative
+    "as enemies to one another",      # expulsion narrative variant
 ]
 
-# Per-emotion additional exclusions
+# FIX 3 + FIX 1: Expanded per-emotion exclusions with shorter phrases
 EMOTION_EXCLUSIONS: Dict[str, List[str]] = {
     "grateful": [
-        "imminent victory", "help from god and", "give good tidings",
+        "imminent victory", "help from god and",
         "invoke blessings", "bestow blessings on the prophet",
+        "grateful or ungrateful",   # FIX: Al-Insan 2 — rebuking framing for grateful users
+        "whether grateful",         # variant
     ],
     "anxious": [
         "gathered before", "day of judgement", "day of resurrection",
         "reckoning", "hellfire", "punishment", "hypocrites",
         "disbelievers", "fight", "kill", "slew", "misfortune befall",
-        "wrath", "torment",
+        "wrath", "torment", "guard against the day",
+        "no soul shall", "nor shall help",   # FIX: Judgement Day variants
     ],
     "stressed": [
         "day of judgement", "hellfire", "fight", "kill",
@@ -351,44 +382,96 @@ EMOTION_EXCLUSIONS: Dict[str, List[str]] = {
         "cannot defeat his purpose", "nor have you any friend or helper",
         "he will bring in your place another people",
         "everyone must bear the consequence",
-        "shall i seek a lord other than", "spend for god's cause",
-        "let the man of means spend", "spend in accordance with his means",
-        "resources are restricted", "that is not difficult for god",
+        "shall i seek a lord other than",
+        "for god's cause",           # FIX: shortened
+        "man of means spend",        # FIX: shortened
+        "spend in accordance",       # FIX: shortened
+        "resources are restricted",
+        "difficult for god",         # FIX: shortened — catches Ibrahim 19
         "you have none besides god",
+        "no soul shall avail",       # FIX: Al-Baqarah 47
+        "guard yourselves against",  # FIX: Judgement Day threat
+        "slaying", "torment",        # FIX: violence/Pharaoh verses
+        "spent and fought",          # FIX: battle verse
+        "go forth",                  # FIX: battle mobilisation
     ],
     "sad": [
         "hellfire", "fight them", "kill", "disbelievers",
         "punishment", "wrath", "torment",
+        "rejected the faith",        # FIX
+        "we will punish",            # FIX
     ],
     "lonely": [
         "hellfire", "fight", "kill", "disbelievers", "punishment",
         "gathered before", "day of judgement", "wrath",
+        "turn their backs in aversion",   # FIX: Al-Isra 45
+        "veils over their hearts",        # FIX: disbeliever context
+        "afflict their ears",             # FIX: disbeliever context
     ],
     "heartbroken": [
         "hellfire", "fight", "kill", "disbelievers", "punishment", "wrath",
+        "rejected the faith",        # FIX: At-Tawbah 65
+        "we will punish",            # FIX: punishment verse
+        "make no excuses",           # FIX: rebuke verse
+        "they are guilty",           # FIX: condemnation
+        "one of the misguided",      # FIX: father verse fragment
+        "go down from here",         # FIX: expulsion narrative
+        "as enemies to",             # FIX: expulsion narrative
+        "cause me to die",           # FIX: death framing
+        "torment", "slaying",        # FIX: violence
     ],
     "angry": [
         "hellfire", "fight them", "kill", "gathered before",
         "day of judgement", "smite", "strike",
+        "fight for the cause",       # FIX: An-Nisa 83 — battle command
+        "urge on the believers",     # FIX: battle command
+        "fend off the power",        # FIX: battle/violence
+        "go forth",                  # FIX: battle mobilisation
+        "strive and struggle",       # FIX: battle framing
     ],
     "tired": [
         "fighting for the cause", "others who may be fighting",
         "praying at dawn for god", "seeking god's bounty",
         "hellfire", "fight", "kill", "disbelievers", "punishment",
+        "lest you stone",            # FIX: Ad-Dukhan 19
+        "stone me",                  # FIX: stoning variant
+        "prescribed alms",           # FIX: Al-Baqarah 109 — ritual instruction for exhausted user
+        "attend to your prayers and pay",  # FIX: ritual command
     ],
     "hopeful": [
         "hellfire", "punishment", "wrath", "hypocrites", "disbelievers",
+        "all will return to your lord",   # FIX: Al-'Alaq 7 — death connotation
+        "return to your lord",            # FIX: short death-framed fragment
     ],
     "reflective": [
         "hellfire", "fight", "kill", "punishment",
+        "go forth", "strive and struggle",   # FIX: battle verses
     ],
     "confused": [
         "hellfire", "fight", "kill", "punishment", "hypocrites",
+        "go down from here as enemies",   # FIX: expulsion narrative (Taha 122)
+        "as enemies to one another",      # FIX: expulsion variant
+    ],
+    "peaceful": [
+        "hellfire", "fight", "kill", "punishment",
+    ],
+    "happy": [
+        "hellfire", "fight", "kill", "punishment", "wrath",
+        "grateful or ungrateful",   # FIX: rebuking framing
+    ],
+    "content": [
+        "hellfire", "fight", "kill", "punishment",
     ],
 }
 
 def is_eligible_ayah(idx: int, emotion: str) -> bool:
     text = str(df.iloc[idx]['ayah_en']).lower()
+
+    # FIX 5: Skip fragment ayahs that are too short to be comforting
+    word_count = len(text.split())
+    if word_count < MIN_AYAH_WORDS:
+        return False
+
     if any(phrase in text for phrase in GLOBAL_EXCLUSIONS):
         return False
     if any(phrase in text for phrase in PERSONAL_JOURNAL_BLOCKLIST):
@@ -398,7 +481,6 @@ def is_eligible_ayah(idx: int, emotion: str) -> bool:
     return True
 
 def get_candidate_indices(emotion: str) -> List[int]:
-    # Primary: use emotion_v2 tag
     if '_emotion_tag' in df.columns:
         mask = (df['_emotion_tag'] == emotion) & (df['_eligible'] == True)
         raw = df[mask].index.tolist()
@@ -407,7 +489,6 @@ def get_candidate_indices(emotion: str) -> List[int]:
         if len(filtered) >= 10:
             return filtered
 
-    # Fallback: full eligible pool
     print(f"  ⚠️ Small pool — using full eligible fallback")
     return [i for i in eligible_indices if is_eligible_ayah(i, emotion)]
 
@@ -455,7 +536,7 @@ def mmr_select(
 
     return [c_indices[i] for i in selected]
 
-# ── Comfort messages (fallback when LLM unavailable) ─────────────────────
+# ── Comfort messages ──────────────────────────────────────────────────────
 COMFORT_FALLBACKS = {
     "grateful":    "MashaAllah — that quiet feeling of noticing your blessings is itself a gift from Allah. Keep returning to gratitude; it opens more doors than you know. 🤍",
     "reflective":  "These quiet moments of reflection are rare and precious. Allah loves the heart that pauses and thinks. Whatever you're working through, clarity will come. 🌙",
@@ -487,7 +568,7 @@ def generate_comfort_message(entry: str, emotion: str) -> str:
 # ── History helpers ───────────────────────────────────────────────────────
 def get_shown_indices() -> List[int]:
     shown = []
-    for item in history_db[-20:]:  # only last 20 entries to avoid over-exclusion
+    for item in history_db[-20:]:
         for m in item.get("matches", []):
             idx = m.get("ayah_index", -1) if isinstance(m, dict) else getattr(m, "ayah_index", -1)
             shown.append(idx)
@@ -501,18 +582,14 @@ def match_ayahs(request: EntryRequest):
     print(f"\n{'='*50}")
     print(f"Entry: {request.entry[:80]}...")
 
-    # 1. Detect emotion
     emotion = detect_emotion(request.entry)
     print(f"  Emotion: {emotion}")
 
-    # 2. Build spiritual query (avoids pulling wrong verse types)
     spiritual_query = rewrite_as_spiritual_query(request.entry, emotion)
 
-    # 3. Encode query + raw entry
     query_embedding = model.encode(spiritual_query, convert_to_tensor=True)
     entry_embedding = model.encode(request.entry, convert_to_tensor=True)
 
-    # 4. Get emotion-filtered candidates
     candidate_indices = get_candidate_indices(emotion)
     if not candidate_indices:
         raise HTTPException(status_code=500, detail="No candidates found")
@@ -520,15 +597,10 @@ def match_ayahs(request: EntryRequest):
     candidate_embeddings = [ayah_embeddings[i] for i in candidate_indices]
     c_tensor = torch.stack(candidate_embeddings)
 
-    # 5. Two-stage scoring:
-    #    60% spiritual query similarity (correct theme)
-    #    40% raw entry similarity (contextual relevance)
-    #    This prevents "burden" in entry from pulling Judgement Day verses
     query_sims = util.cos_sim(query_embedding, c_tensor)[0].tolist()
     entry_sims = util.cos_sim(entry_embedding, c_tensor)[0].tolist()
     combined   = [0.6 * q + 0.4 * e for q, e in zip(query_sims, entry_sims)]
 
-    # 6. Threshold filter
     threshold_pairs = [
         (ci, ce, s) for ci, ce, s
         in zip(candidate_indices, candidate_embeddings, combined)
@@ -536,7 +608,6 @@ def match_ayahs(request: EntryRequest):
     ]
     print(f"  Threshold filter: {len(candidate_indices)} → {len(threshold_pairs)}")
 
-    # Fallback: take top-N if threshold too strict
     if len(threshold_pairs) < request.top_n * 3:
         top_k = sorted(
             zip(candidate_indices, candidate_embeddings, combined),
@@ -548,7 +619,6 @@ def match_ayahs(request: EntryRequest):
     filtered_indices = [x[0] for x in threshold_pairs]
     filtered_embeds  = [x[1] for x in threshold_pairs]
 
-    # 7. MMR selection (diversity + relevance)
     selected_indices = mmr_select(
         query_embedding,
         filtered_embeds,
@@ -558,13 +628,11 @@ def match_ayahs(request: EntryRequest):
         already_shown=get_shown_indices()
     )
 
-    # Debug: print selected ayahs
     for idx in selected_indices:
         row = df.iloc[int(idx)]
         score = combined[candidate_indices.index(idx)] if idx in candidate_indices else 0
         print(f"  ✦ [{score:.3f}] {row['surah_name_roman']} {row['ayah_no_surah']}: {str(row['ayah_en'])[:60]}...")
 
-    # 8. Build response
     matches = []
     for idx in selected_indices:
         row = df.iloc[int(idx)]
@@ -587,7 +655,7 @@ def match_ayahs(request: EntryRequest):
         "emotion_after": None,
         "timestamp": datetime.utcnow().isoformat()
     })
-    persist()  # save to disk
+    persist()
 
     return MatchResponse(
         matches=matches,

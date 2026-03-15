@@ -5,3 +5,12 @@ requests
 torch
 sentence-transformers
 python-dotenv
+
+
+
+
+POSTGRES_USER: str = "postgres"
+    POSTGRES_PASSWORD: str = "1234"
+    POSTGRES_DB: str = "synapse_db"
+    POSTGRES_SERVER: str = "localhost"
+    POSTGRES_PORT: str = "5432"
