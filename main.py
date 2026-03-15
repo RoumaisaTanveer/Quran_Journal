@@ -314,7 +314,10 @@ GLOBAL_EXCLUSIONS = [
     "fight for the cause of god",            # battle command
     "urge on the believers",                 # battle command
     "fend off the power",                    # battle/violence
-    "forgive my father; for he is one of the misguided",  # specific fragment, not comforting
+    "forgive my father; for he is one of the misguided",
+    "for those who collect zakat",
+    "freeing slaves",
+    "conciliating people's hearts",  # specific fragment, not comforting
 ]
 
 PERSONAL_JOURNAL_BLOCKLIST = [
@@ -393,7 +396,10 @@ EMOTION_EXCLUSIONS: Dict[str, List[str]] = {
         "guard yourselves against",  # FIX: Judgement Day threat
         "slaying", "torment",        # FIX: violence/Pharaoh verses
         "spent and fought",          # FIX: battle verse
-        "go forth",                  # FIX: battle mobilisation
+        "go forth",     
+        "for those who collect zakat",
+        "freeing slaves",
+        "conciliating people's hearts",             # FIX: battle mobilisation
     ],
     "sad": [
         "hellfire", "fight them", "kill", "disbelievers",
