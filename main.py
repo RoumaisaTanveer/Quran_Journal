@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Optional, Dict
 import pandas as pd
@@ -29,6 +30,7 @@ app.add_middleware(
     allow_origins=["*"], allow_credentials=True,
     allow_methods=["*"], allow_headers=["*"]
 )
+app.mount("/test", StaticFiles(directory="."), name="test")
 
 # ── Load CSV ──────────────────────────────────────────────────────────────
 df = pd.read_csv(CSV_FILE)
@@ -317,7 +319,14 @@ GLOBAL_EXCLUSIONS = [
     "forgive my father; for he is one of the misguided",
     "for those who collect zakat",
     "freeing slaves",
-    "conciliating people's hearts",  # specific fragment, not comforting
+    "conciliating people's hearts", 
+    "pray to your lord and sacrifice to him alone",  # Al-Kawthar 1
+    "what is the matter with you, that you are not among those who have prostrated",  # Iblis story
+    "he would not leave even one living creature",   # punishment framing
+    "capable of retribution",                        # threatening ending
+    "no human being shall be of the least avail to any other human being",  # Judgement Day
+    "whoever has been blind in this life will be blind in the life to come",  # threat
+    "do not invoke besides god what can neither help nor harm you",  # rhetorical threat # specific fragment, not comforting
 ]
 
 PERSONAL_JOURNAL_BLOCKLIST = [

@@ -1,0 +1,293 @@
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap { padding: 1rem 0; font-family: var(--font-sans); }
+.url-row { display: flex; gap: 8px; margin-bottom: 1rem; }
+.url-row input { flex: 1; font-size: 13px; padding: 8px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); }
+.url-row button { font-size: 13px; padding: 8px 16px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); cursor: pointer; white-space: nowrap; }
+.url-row button:hover { background: var(--color-background-secondary); }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; margin-bottom: 1rem; }
+.stat { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px; text-align: center; }
+.stat-n { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+.stat-l { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+.progress { height: 3px; background: var(--color-border-tertiary); border-radius: 2px; margin-bottom: 1rem; display: none; }
+.progress-bar { height: 100%; background: #7B5CF0; width: 0%; transition: width 0.3s; border-radius: 2px; }
+.test-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 12px; margin-bottom: 6px; background: var(--color-background-primary); }
+.test-row { display: flex; align-items: flex-start; gap: 8px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-border-secondary); flex-shrink: 0; margin-top: 5px; }
+.dot.running { background: #d4a84b; }
+.dot.pass { background: #1D9E75; }
+.dot.fail { background: #E24B4A; }
+.info { flex: 1; }
+.info .name { font-size: 13px; color: var(--color-text-primary); }
+.info .note { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+.run-one { font-size: 11px; padding: 3px 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-secondary); cursor: pointer; flex-shrink: 0; }
+.run-one:hover { background: var(--color-background-secondary); }
+.result { margin-top: 8px; font-size: 12px; padding: 8px 10px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-secondary); white-space: pre-wrap; word-break: break-word; max-height: 180px; overflow-y: auto; display: none; line-height: 1.6; }
+.result.show { display: block; }
+.result.pass { border-left: 3px solid #1D9E75; }
+.result.fail { border-left: 3px solid #E24B4A; }
+.prompt-box { margin-top: 8px; font-size: 11px; padding: 6px 10px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-secondary); white-space: pre-wrap; word-break: break-word; border-left: 3px solid #7B5CF0; display: none; line-height: 1.5; opacity: 0.85; }
+.prompt-box.show { display: block; }
+.prompt-label { font-size: 10px; font-weight: 600; color: #7B5CF0; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+.method { display: inline-block; font-size: 10px; padding: 1px 5px; border-radius: 3px; margin-right: 4px; font-weight: 500; }
+.POST { background: #E6F1FB; color: #185FA5; }
+.GET { background: #EAF3DE; color: #3B6D11; }
+.DELETE { background: #FCEBEB; color: #A32D2D; }
+.export-row { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
+.export-btn { font-size: 12px; padding: 5px 12px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; cursor: pointer; color: var(--color-text-secondary); }
+.export-btn:hover { background: var(--color-background-secondary); }
+.group-label { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; margin: 1rem 0 6px; }
+</style>
+
+<div class="wrap">
+  <div class="url-row">
+    <input id="baseUrl" type="text" placeholder="https://your-url.ngrok-free.dev" />
+    <button onclick="runAll()">Run all ↗</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="sTotal">0</div><div class="stat-l">total</div></div>
+    <div class="stat"><div class="stat-n" id="sPass" style="color:#1D9E75">0</div><div class="stat-l">passed</div></div>
+    <div class="stat"><div class="stat-n" id="sFail" style="color:#E24B4A">0</div><div class="stat-l">failed</div></div>
+    <div class="stat"><div class="stat-n" id="sPend">0</div><div class="stat-l">pending</div></div>
+  </div>
+
+  <div class="progress" id="prog"><div class="progress-bar" id="bar"></div></div>
+
+  <div class="export-row">
+    <button class="export-btn" onclick="exportAll()">Export results JSON</button>
+  </div>
+
+  <div id="tests"></div>
+</div>
+
+<script>
+const TESTS = [
+  { g:"health", m:"GET", p:"/health", label:"Health check", note:"Server up + ayahs loaded",
+    check: r => r.status==="ok" && r.ayahs_loaded > 0,
+    show: r => `status: ${r.status} | ayahs_loaded: ${r.ayahs_loaded} | history: ${r.history_count} | bookmarks: ${r.bookmarks_count}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: sad", note:"Crying, empty, nothing matters",
+    body:{entry:"I have been crying all day and feel so empty inside like nothing matters anymore",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}\nComfort: ${r.comfort?.slice(0,120)}...` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: stressed", note:"Exams, can't sleep, will fail",
+    body:{entry:"I'm so stressed about my exams I haven't slept properly in days and I feel like I'm going to fail everything",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: grateful", note:"Blessed, alhamdulillah",
+    body:{entry:"Alhamdulillah I just got news that made me realize how blessed I truly am so much gratitude in my heart",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: lonely", note:"Nobody sees me, invisible",
+    body:{entry:"I feel completely alone nobody checks on me nobody sees me I'm invisible to everyone around me",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: angry", note:"Injustice, unfair",
+    body:{entry:"I'm so angry it's not fair I've been treated with such injustice and I can't let it go",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: tired", note:"Exhausted, drained, can't go on",
+    body:{entry:"I'm exhausted completely drained I have nothing left to give I can't go on like this anymore",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: heartbroken", note:"Betrayal, broken trust",
+    body:{entry:"My heart is broken I was betrayed by someone I trusted completely I can't forgive and can't let go",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: hopeful", note:"Inshallah, dua, trust Allah",
+    body:{entry:"I feel hopeful today I really believe things are going to get better inshallah making dua and trusting Allah",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: confused", note:"Lost, no direction",
+    body:{entry:"I don't know which direction to take in life I feel so lost and unclear about everything what to do",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: peaceful", note:"Calm, settled heart",
+    body:{entry:"I feel calm and at peace today my heart feels settled and I'm just grateful for everything around me",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"LLM fallback — vague", note:"No keywords, triggers LLM",
+    body:{entry:"Today was a day. I just sat there. Things happened. I don't know.",top_n:3},
+    check: r=>r.matches?.length>0,
+    show: r=>`Detected: ${r.emotion_before} | Matches: ${r.matches?.length}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"top_n: 1", note:"Should return exactly 1",
+    body:{entry:"I feel sad and lost today",top_n:1},
+    check: r=>r.matches?.length===1,
+    show: r=>`Matches returned: ${r.matches?.length} (expected 1)` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"top_n: 5", note:"Should return exactly 5",
+    body:{entry:"I feel anxious and stressed about everything in my life right now",top_n:5},
+    check: r=>r.matches?.length===5,
+    show: r=>`Matches returned: ${r.matches?.length} (expected 5)` },
+
+  { g:"emotion", m:"POST", p:"/update-emotion", label:"Update emotion — valid", note:"entry_id 0 → peaceful",
+    body:{entry_id:0,emotion_after:"peaceful"},
+    check: r=>r.message?.includes("updated"),
+    show: r=>`${r.message}` },
+
+  { g:"emotion", m:"POST", p:"/update-emotion", label:"Update emotion — invalid ID", note:"Should 404",
+    body:{entry_id:9999,emotion_after:"happy"},
+    expectErr:404, show: r=>`Got expected 404` },
+
+  { g:"history", m:"GET", p:"/history", label:"Get history", note:"Should have entries from match tests",
+    check: r=>Array.isArray(r)&&r.length>0,
+    show: r=>`${r.length} entries. Emotions: ${[...new Set(r.map(e=>e.emotion_before))].join(', ')}` },
+
+  { g:"history", m:"DELETE", p:"/delete-entry/0", label:"Delete entry — valid", note:"Should delete entry 0",
+    check: r=>r.message?.includes("Deleted"),
+    show: r=>`${r.message}` },
+
+  { g:"history", m:"DELETE", p:"/delete-entry/9999", label:"Delete entry — invalid", note:"Should 404",
+    expectErr:404, show: r=>`Got expected 404` },
+
+  { g:"bookmarks", m:"POST", p:"/bookmark", label:"Add bookmark with note", note:"ayah_index: 42",
+    body:{ayah_index:42,note:"This one really hit me"},
+    check: r=>r.ayah_index===42&&!!r.ayah_ar,
+    show: r=>`Saved: ${r.surah} ${r.ayah_no} | ${r.ayah?.slice(0,60)}...` },
+
+  { g:"bookmarks", m:"POST", p:"/bookmark", label:"Duplicate bookmark", note:"Same index, no duplicate",
+    body:{ayah_index:42,note:"another note"},
+    check: r=>r.ayah_index===42,
+    show: r=>`Returned existing: ${r.surah} ${r.ayah_no}` },
+
+  { g:"bookmarks", m:"POST", p:"/bookmark", label:"Bookmark — no note", note:"ayah_index: 100",
+    body:{ayah_index:100},
+    check: r=>r.ayah_index===100,
+    show: r=>`Saved: ${r.surah} ${r.ayah_no}` },
+
+  { g:"bookmarks", m:"POST", p:"/bookmark", label:"Bookmark — invalid index", note:"Should 400",
+    body:{ayah_index:-1},
+    expectErr:400, show: r=>`Got expected 400` },
+
+  { g:"bookmarks", m:"GET", p:"/bookmarks", label:"Get bookmarks", note:"Should have 2",
+    check: r=>Array.isArray(r)&&r.length>=2,
+    show: r=>`${r.length} bookmarks: indices ${r.map(b=>b.ayah_index).join(', ')}` },
+
+  { g:"bookmarks", m:"DELETE", p:"/bookmark/42", label:"Remove bookmark — valid", note:"Remove index 42",
+    check: r=>r.message?.includes("removed"),
+    show: r=>`${r.message}` },
+
+  { g:"bookmarks", m:"DELETE", p:"/bookmark/9999", label:"Remove bookmark — not found", note:"Should 404",
+    expectErr:404, show: r=>`Got expected 404` },
+
+  { g:"pattern", m:"GET", p:"/pattern", label:"Get pattern", note:"Emotion stats after all entries",
+    check: r=>r.total_entries>=0&&!!r.dominant_emotion,
+    show: r=>`Entries: ${r.total_entries} | Dominant: ${r.dominant_emotion} | Positive shifts: ${r.shift_to_positive} | Top surah: ${r.most_shown_surah}` },
+
+  { g:"reflect", m:"POST", p:"/reflect-again/1?top_n=3", label:"Reflect again — valid", note:"Fresh ayahs for entry 1",
+    check: r=>r.matches?.length>0,
+    show: r=>`New ayahs: ${r.matches?.map(m=>`${m.surah} ${m.ayah_no}`).join(', ')}` },
+
+  { g:"reflect", m:"POST", p:"/reflect-again/9999", label:"Reflect again — invalid", note:"Should 404",
+    expectErr:404, show: r=>`Got expected 404` },
+];
+
+const results = {};
+
+function base() { return document.getElementById('baseUrl').value.replace(/\/$/,''); }
+
+async function runOne(idx) {
+  const t = TESTS[idx];
+  const dot = document.getElementById('d'+idx);
+  const box = document.getElementById('b'+idx);
+  dot.className = 'dot running';
+  box.className = 'result show';
+  box.textContent = 'Running...';
+
+  try {
+    const opts = { method: t.m, headers: {'Content-Type':'application/json', 'ngrok-skip-browser-warning':'true'} };
+    if (t.body) opts.body = JSON.stringify(t.body);
+    const res = await fetch(base() + t.p, opts);
+    let data = {};
+    try { data = await res.json(); } catch(e) {}
+
+    let passed, txt;
+    if (t.expectErr) {
+      passed = res.status === t.expectErr;
+      txt = passed ? `Got expected ${t.expectErr}` : `Expected ${t.expectErr}, got ${res.status}\n${JSON.stringify(data).slice(0,200)}`;
+    } else {
+      passed = res.ok && (!t.check || t.check(data));
+      txt = passed && t.show ? t.show(data) : (!passed ? `Status ${res.status}\n${JSON.stringify(data).slice(0,300)}` : `OK`);
+    }
+
+    dot.className = 'dot ' + (passed ? 'pass' : 'fail');
+    box.className = 'result show ' + (passed ? 'pass' : 'fail');
+    box.textContent = txt;
+    results[idx] = { label:t.label, group:t.group, method:t.m, path:t.p, passed, status:res.status, data };
+  } catch(e) {
+    dot.className = 'dot fail';
+    box.className = 'result show fail';
+    box.textContent = `Network error: ${e.message}\nMake sure ngrok URL is pasted correctly and uvicorn is running.`;
+    results[idx] = { label:t.label, passed:false, error:e.message };
+  }
+  updateStats();
+}
+
+async function runAll() {
+  const prog = document.getElementById('prog');
+  const bar = document.getElementById('bar');
+  prog.style.display = 'block';
+  bar.style.width = '0%';
+  for (let i = 0; i < TESTS.length; i++) {
+    await runOne(i);
+    bar.style.width = Math.round((i+1)/TESTS.length*100)+'%';
+    await new Promise(r=>setTimeout(r,400));
+  }
+  setTimeout(()=>prog.style.display='none', 1000);
+}
+
+function updateStats() {
+  const vals = Object.values(results);
+  document.getElementById('sTotal').textContent = TESTS.length;
+  document.getElementById('sPass').textContent = vals.filter(r=>r.passed).length;
+  document.getElementById('sFail').textContent = vals.filter(r=>!r.passed).length;
+  document.getElementById('sPend').textContent = TESTS.length - vals.length;
+}
+
+function exportAll() {
+  const out = TESTS.map((t,i)=>({ id:i, group:t.g, label:t.label, method:t.m, path:t.p, result: results[i]||{passed:null,status:'not run'} }));
+  const blob = new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'quran_test_results.json'; a.click();
+}
+
+// Render
+const groups = [...new Set(TESTS.map(t=>t.g))];
+const container = document.getElementById('tests');
+groups.forEach(g => {
+  const label = document.createElement('div');
+  label.className = 'group-label';
+  label.textContent = g;
+  container.appendChild(label);
+  TESTS.forEach((t,i) => {
+    if (t.g !== g) return;
+    const card = document.createElement('div');
+    card.className = 'test-card';
+    const promptHtml = t.body ? ('<div class="prompt-box show"><span class="prompt-label">Request Body</span><pre style="margin:0;font-size:11px;font-family:monospace;white-space:pre-wrap">' + JSON.stringify(t.body, null, 2) + '</pre></div>') : '';
+    card.innerHTML = `
+      <div class="test-row">
+        <div class="dot" id="d${i}"></div>
+        <div class="info">
+          <div class="name"><span class="method ${t.m}">${t.m}</span><code style="font-size:12px;font-family:var(--font-mono)">${t.p.split('?')[0]}</code> — ${t.label}</div>
+          <div class="note">${t.note}</div>
+        </div>
+        <button class="run-one" onclick="runOne(${i})">Run</button>
+      </div>
+      ` + promptHtml + `
+      <div class="result" id="b${i}"></div>`;
+    container.appendChild(card);
+  });
+});
+updateStats();
+</script>
