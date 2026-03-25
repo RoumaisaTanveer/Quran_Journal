@@ -64,7 +64,7 @@ def _load_data() -> dict:
             return json.loads(DATA_FILE.read_text(encoding="utf-8"))
         except Exception:
             pass
-    return {"history": [], "bookmarks": []}
+    return {"history": [], "bookmarks": [], "feedback": []}
 
 def _save_data(data: dict):
     DATA_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -72,9 +72,10 @@ def _save_data(data: dict):
 _db = _load_data()
 history_db: List[Dict]   = _db.get("history", [])
 bookmarks_db: List[Dict] = _db.get("bookmarks", [])
+feedback_db: List[Dict] = _db.get("feedback", [])
 
 def persist():
-    _save_data({"history": history_db, "bookmarks": bookmarks_db})
+    _save_data({"history": history_db, "bookmarks": bookmarks_db, "feedback": feedback_db})
 
 # ── Pydantic models ───────────────────────────────────────────────────────
 VALID_EMOTIONS = {
@@ -87,6 +88,11 @@ class EntryRequest(BaseModel):
     entry: str
     top_n: int = 3
 
+class FeedbackRequest(BaseModel):
+    entry_id: int
+    ayah_index: int
+    rating: int  # 1 = relevant, -1 = not relevant
+    
 class AyahMatch(BaseModel):
     surah: str
     ayah_no: int
@@ -772,6 +778,33 @@ def get_pattern():
         shift_to_positive=shift_count,
         most_shown_surah=surah_counts.most_common(1)[0][0] if surah_counts else "N/A"
     )
+@app.post("/feedback")
+def submit_feedback(req: FeedbackRequest):
+    if req.rating not in (1, -1):
+        raise HTTPException(status_code=400, detail="Rating must be 1 or -1")
+    # Update existing feedback if already rated this ayah for this entry
+    for fb in feedback_db:
+        if fb["entry_id"] == req.entry_id and fb["ayah_index"] == req.ayah_index:
+            fb["rating"] = req.rating
+            persist()
+            return {"message": "Feedback updated"}
+    # Get emotion for this entry
+    emotion = ""
+    if 0 <= req.entry_id < len(history_db):
+        emotion = history_db[req.entry_id].get("emotion_before", "")
+    feedback_db.append({
+        "entry_id":   req.entry_id,
+        "ayah_index": req.ayah_index,
+        "emotion":    emotion,
+        "rating":     req.rating,
+        "timestamp":  datetime.utcnow().isoformat()
+    })
+    persist()
+    return {"message": "Feedback saved"}
+
+@app.get("/feedback")
+def get_feedback():
+    return feedback_db    
 
 @app.post("/reflect-again/{entry_id}", response_model=MatchResponse)
 def reflect_again(entry_id: int, top_n: int = 3):

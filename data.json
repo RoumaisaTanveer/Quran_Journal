@@ -1,36 +1,6 @@
 {
   "history": [
     {
-      "entry": "I'm exhausted completely drained I have nothing left to give I can't go on like this anymore",
-      "matches": [
-        {
-          "surah": "Al-Anfal",
-          "ayah_no": 9,
-          "ayah": "God only did this to give you good news, and so that your hearts might be set at rest, for help comes from God alone. Surely, God is Mighty and Wise.",
-          "ayah_ar": "وَمَا جَعَلَهُ ٱللَّهُ إِلَّا بُشْرَىٰ وَلِتَطْمَئِنَّ بِهِۦ قُلُوبُكُمْ ۚ وَمَا ٱلنَّصْرُ إِلَّا مِنْ عِندِ ٱللَّهِ ۚ إِنَّ ٱللَّهَ عَزِيزٌ حَكِيمٌ",
-          "ayah_index": 1169
-        },
-        {
-          "surah": "An-Nisa",
-          "ayah_no": 27,
-          "ayah": "God wishes to lighten your burdens, for, man has been created weak.",
-          "ayah_ar": "يُرِيدُ ٱللَّهُ أَن يُخَفِّفَ عَنكُمْ ۚ وَخُلِقَ ٱلْإِنسَٰنُ ضَعِيفًۭا",
-          "ayah_index": 520
-        },
-        {
-          "surah": "Ibrahim",
-          "ayah_no": 39,
-          "ayah": "Lord, grant that I may keep up the prayer, and so may my offspring. My Lord, accept my prayer.",
-          "ayah_ar": "رَبِّ ٱجْعَلْنِى مُقِيمَ ٱلصَّلَوٰةِ وَمِن ذُرِّيَّتِى ۚ رَبَّنَا وَتَقَبَّلْ دُعَآءِ",
-          "ayah_index": 1789
-        }
-      ],
-      "comfort": "Rest is not weakness — even our Prophet ﷺ rested. Be gentle with yourself today. Allah sees your effort even when you feel you have nothing left. 🤍",
-      "emotion_before": "tired",
-      "emotion_after": null,
-      "timestamp": "2026-03-15T07:00:54.079289"
-    },
-    {
       "entry": "My heart is broken I was betrayed by someone I trusted completely I can't forgive and can't let go",
       "matches": [
         {
@@ -1949,6 +1919,456 @@
       "emotion_before": "heartbroken",
       "emotion_after": null,
       "timestamp": "2026-03-24T06:18:25.686901"
+    },
+    {
+      "entry": "not feeling good",
+      "matches": [
+        {
+          "surah": "Hud",
+          "ayah_no": 48,
+          "ayah": "These are tidings of the unseen that We reveal to you, \\[O Prophet\\], which you did not know before, nor did your people, so be patient: the future belongs to the God-fearing.",
+          "ayah_ar": "تِلْكَ مِنْ أَنۢبَآءِ ٱلْغَيْبِ نُوحِيهَآ إِلَيْكَ ۖ مَا كُنتَ تَعْلَمُهَآ أَنتَ وَلَا قَوْمُكَ مِن قَبْلِ هَٰذَا ۖ فَٱصْبِرْ ۖ إِنَّ ٱلْعَٰقِبَةَ لِلْمُتَّقِينَ",
+          "ayah_index": 1521
+        },
+        {
+          "surah": "At-Taghabun",
+          "ayah_no": 7,
+          "ayah": "Believe then in God and His Messenger, and in the light which We have sent down. God is fully aware of all that you do.",
+          "ayah_ar": "فَـَٔامِنُوا۟ بِٱللَّهِ وَرَسُولِهِۦ وَٱلنُّورِ ٱلَّذِىٓ أَنزَلْنَا ۚ وَٱللَّهُ بِمَا تَعْمَلُونَ خَبِيرٌۭ",
+          "ayah_index": 5206
+        },
+        {
+          "surah": "Sad",
+          "ayah_no": 28,
+          "ayah": "This is a blessed Book which We sent down to you \\[Muhammad\\], for people to ponder over its messages, and for those with understanding to take heed.",
+          "ayah_ar": "كِتَٰبٌ أَنزَلْنَٰهُ إِلَيْكَ مُبَٰرَكٌۭ لِّيَدَّبَّرُوٓا۟ ءَايَٰتِهِۦ وَلِيَتَذَكَّرَ أُو۟لُوا۟ ٱلْأَلْبَٰبِ",
+          "ayah_index": 3998
+        }
+      ],
+      "comfort": "These quiet moments of reflection are rare and precious. Allah loves the heart that pauses and thinks. Whatever you're working through, clarity will come. 🌙",
+      "emotion_before": "reflective",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:36:06.548322"
+    },
+    {
+      "entry": "I have been crying all day and feel so empty inside like nothing matters anymore",
+      "matches": [
+        {
+          "surah": "Al-Hijr",
+          "ayah_no": 96,
+          "ayah": "We do indeed know how your heart is distressed at what they say.",
+          "ayah_ar": "وَلَقَدْ نَعْلَمُ أَنَّكَ يَضِيقُ صَدْرُكَ بِمَا يَقُولُونَ",
+          "ayah_index": 1898
+        },
+        {
+          "surah": "Al-Anbya",
+          "ayah_no": 106,
+          "ayah": "We have sent you forth as a mercy to all mankind.",
+          "ayah_ar": "وَمَآ أَرْسَلْنَٰكَ إِلَّا رَحْمَةًۭ لِّلْعَٰلَمِينَ",
+          "ayah_index": 2589
+        },
+        {
+          "surah": "At-Tawbah",
+          "ayah_no": 102,
+          "ayah": "Take alms out of their wealth to cleanse them and purify them, and pray for them; your prayer will be a comfort to them. God is all hearing, all knowing.",
+          "ayah_ar": "خُذْ مِنْ أَمْوَٰلِهِمْ صَدَقَةًۭ تُطَهِّرُهُمْ وَتُزَكِّيهِم بِهَا وَصَلِّ عَلَيْهِمْ ۖ إِنَّ صَلَوٰتَكَ سَكَنٌۭ لَّهُمْ ۗ وَٱللَّهُ سَمِيعٌ عَلِيمٌ",
+          "ayah_index": 1337
+        }
+      ],
+      "comfort": "It's okay to feel sad. Even the Prophets wept. Allah does not waste your tears — every one of them is seen and counted. After hardship always comes ease. 💛",
+      "emotion_before": "sad",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:37:01.506193"
+    },
+    {
+      "entry": "I'm so stressed about my exams I haven't slept properly in days and I feel like I'm going to fail everything",
+      "matches": [
+        {
+          "surah": "Ali 'Imran",
+          "ayah_no": 185,
+          "ayah": "You will surely be tried and tested in your possessions and your persons, and you shall surely hear many hurtful things from those who were given the Book before you and from those who set up partners with God, but if you endure with fortitude and restrain yourselves, that indeed is a matter of strong determination.",
+          "ayah_ar": "۞ لَتُبْلَوُنَّ فِىٓ أَمْوَٰلِكُمْ وَأَنفُسِكُمْ وَلَتَسْمَعُنَّ مِنَ ٱلَّذِينَ أُوتُوا۟ ٱلْكِتَٰبَ مِن قَبْلِكُمْ وَمِنَ ٱلَّذِينَ أَشْرَكُوٓا۟ أَذًۭى كَثِيرًۭا ۚ وَإِن تَصْبِرُوا۟ وَتَتَّقُوا۟ فَإِنَّ ذَٰلِكَ مِنْ عَزْمِ ٱلْأُمُورِ",
+          "ayah_index": 478
+        },
+        {
+          "surah": "Ali 'Imran",
+          "ayah_no": 1,
+          "ayah": "God! There is no deity save Him, the Living, the Sustainer.",
+          "ayah_ar": "ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ",
+          "ayah_index": 294
+        },
+        {
+          "surah": "Al-Baqarah",
+          "ayah_no": 25,
+          "ayah": "God does not disdain to give a parable about a gnat or a smaller creature. The faithful know that it is the truth from their Lord, but those who deny the truth ask, \"What could God mean by this parable?\" He lets many go astray through it, and guides many by it. But He makes only the disobedient go astray:",
+          "ayah_ar": "۞ إِنَّ ٱللَّهَ لَا يَسْتَحْىِۦٓ أَن يَضْرِبَ مَثَلًۭا مَّا بَعُوضَةًۭ فَمَا فَوْقَهَا ۚ فَأَمَّا ٱلَّذِينَ ءَامَنُوا۟ فَيَعْلَمُونَ أَنَّهُ ٱلْحَقُّ مِن رَّبِّهِمْ ۖ وَأَمَّا ٱلَّذِينَ كَفَرُوا۟ فَيَقُولُونَ مَاذَآ أَرَادَ ٱللَّهُ بِهَٰذَا مَثَلًۭا ۘ يُضِلُّ بِهِۦ كَثِيرًۭا وَيَهْدِى بِهِۦ كَثِيرًۭا ۚ وَمَا يُضِلُّ بِهِۦٓ إِلَّا ٱلْفَٰسِقِينَ",
+          "ayah_index": 32
+        }
+      ],
+      "comfort": "When everything feels too much, remember: Allah is closer to you than your own heartbeat. You don't have to solve it all today. Just take the next small step. 🌿",
+      "emotion_before": "stressed",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:37:02.319010"
+    },
+    {
+      "entry": "Alhamdulillah I just got news that made me realize how blessed I truly am so much gratitude in my heart",
+      "matches": [
+        {
+          "surah": "An-Nahl",
+          "ayah_no": 52,
+          "ayah": "Whatever blessing you have is from God, and to Him you turn for help when distress befalls you,",
+          "ayah_ar": "وَمَا بِكُم مِّن نِّعْمَةٍۢ فَمِنَ ٱللَّهِ ۖ ثُمَّ إِذَا مَسَّكُمُ ٱلضُّرُّ فَإِلَيْهِ تَجْـَٔرُونَ",
+          "ayah_index": 1953
+        },
+        {
+          "surah": "Az-Zumar",
+          "ayah_no": 65,
+          "ayah": "Therefore, you should worship God alone and be among the thankful.",
+          "ayah_ar": "بَلِ ٱللَّهَ فَٱعْبُدْ وَكُن مِّنَ ٱلشَّٰكِرِينَ",
+          "ayah_index": 4123
+        },
+        {
+          "surah": "Ghafir",
+          "ayah_no": 60,
+          "ayah": "It is God who has given you the night in which to rest and the day in which to see. God is truly bountiful to people, but most people do not give thanks.",
+          "ayah_ar": "ٱللَّهُ ٱلَّذِى جَعَلَ لَكُمُ ٱلَّيْلَ لِتَسْكُنُوا۟ فِيهِ وَٱلنَّهَارَ مُبْصِرًا ۚ إِنَّ ٱللَّهَ لَذُو فَضْلٍ عَلَى ٱلنَّاسِ وَلَٰكِنَّ أَكْثَرَ ٱلنَّاسِ لَا يَشْكُرُونَ",
+          "ayah_index": 4193
+        }
+      ],
+      "comfort": "MashaAllah — that quiet feeling of noticing your blessings is itself a gift from Allah. Keep returning to gratitude; it opens more doors than you know. 🤍",
+      "emotion_before": "grateful",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:37:03.255020"
+    },
+    {
+      "entry": "I feel completely alone nobody checks on me nobody sees me I'm invisible to everyone around me",
+      "matches": [
+        {
+          "surah": "An-Nahl",
+          "ayah_no": 18,
+          "ayah": "God knows all that you conceal and all that you reveal.",
+          "ayah_ar": "وَٱللَّهُ يَعْلَمُ مَا تُسِرُّونَ وَمَا تُعْلِنُونَ",
+          "ayah_index": 1919
+        },
+        {
+          "surah": "Ad-Duhaa",
+          "ayah_no": 2,
+          "ayah": "your Lord has not forsaken you, nor is He displeased with you,",
+          "ayah_ar": "مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَىٰ",
+          "ayah_index": 6081
+        },
+        {
+          "surah": "Qaf",
+          "ayah_no": 21,
+          "ayah": "You were heedless of this, but now We have removed your veil, so your sight today is sharp.",
+          "ayah_ar": "لَّقَدْ كُنتَ فِى غَفْلَةٍۢ مِّنْ هَٰذَا فَكَشَفْنَا عَنكَ غِطَآءَكَ فَبَصَرُكَ ٱلْيَوْمَ حَدِيدٌۭ",
+          "ayah_index": 4651
+        }
+      ],
+      "comfort": "Allah is with you even when no one else is — He hears you before you even speak. You are never truly alone. 🤍",
+      "emotion_before": "lonely",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:37:03.863909"
+    },
+    {
+      "entry": "I'm so angry it's not fair I've been treated with such injustice and I can't let it go",
+      "matches": [
+        {
+          "surah": "Hud",
+          "ayah_no": 51,
+          "ayah": "My people, seek forgiveness of your Lord and turn to Him in repentance. He will send from the sky abundant rain upon you; He will add strength to your strength. Do not turn away from Him as evil-doers.\"",
+          "ayah_ar": "وَيَٰقَوْمِ ٱسْتَغْفِرُوا۟ رَبَّكُمْ ثُمَّ تُوبُوٓا۟ إِلَيْهِ يُرْسِلِ ٱلسَّمَآءَ عَلَيْكُم مِّدْرَارًۭا وَيَزِدْكُمْ قُوَّةً إِلَىٰ قُوَّتِكُمْ وَلَا تَتَوَلَّوْا۟ مُجْرِمِينَ",
+          "ayah_index": 1524
+        },
+        {
+          "surah": "An-Nisa",
+          "ayah_no": 105,
+          "ayah": "Ask God for forgiveness: He is most forgiving and merciful.",
+          "ayah_ar": "وَٱسْتَغْفِرِ ٱللَّهَ ۖ إِنَّ ٱللَّهَ كَانَ غَفُورًۭا رَّحِيمًۭا",
+          "ayah_index": 598
+        },
+        {
+          "surah": "Al-Ahzab",
+          "ayah_no": 32,
+          "ayah": "Stay in your homes and do not flaunt your charms as in the former times of ignorance. Attend to your prayers, pay the zakat and obey God and His Messenger. Women of the \\[Prophet\"s\\] Household, God seeks only to remove all impurity from you, and to make you completely pure.",
+          "ayah_ar": "وَقَرْنَ فِى بُيُوتِكُنَّ وَلَا تَبَرَّجْنَ تَبَرُّجَ ٱلْجَٰهِلِيَّةِ ٱلْأُولَىٰ ۖ وَأَقِمْنَ ٱلصَّلَوٰةَ وَءَاتِينَ ٱلزَّكَوٰةَ وَأَطِعْنَ ٱللَّهَ وَرَسُولَهُۥٓ ۚ إِنَّمَا يُرِيدُ ٱللَّهُ لِيُذْهِبَ عَنكُمُ ٱلرِّجْسَ أَهْلَ ٱلْبَيْتِ وَيُطَهِّرَكُمْ تَطْهِيرًۭا",
+          "ayah_index": 3565
+        }
+      ],
+      "comfort": "Your anger makes sense. أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ — seek refuge in Allah. He is Just; He sees everything. 🌿",
+      "emotion_before": "angry",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:37:04.705124"
+    },
+    {
+      "entry": "I'm exhausted completely drained I have nothing left to give I can't go on like this anymore",
+      "matches": [
+        {
+          "surah": "Al-Anfal",
+          "ayah_no": 9,
+          "ayah": "God only did this to give you good news, and so that your hearts might be set at rest, for help comes from God alone. Surely, God is Mighty and Wise.",
+          "ayah_ar": "وَمَا جَعَلَهُ ٱللَّهُ إِلَّا بُشْرَىٰ وَلِتَطْمَئِنَّ بِهِۦ قُلُوبُكُمْ ۚ وَمَا ٱلنَّصْرُ إِلَّا مِنْ عِندِ ٱللَّهِ ۚ إِنَّ ٱللَّهَ عَزِيزٌ حَكِيمٌ",
+          "ayah_index": 1169
+        },
+        {
+          "surah": "An-Nisa",
+          "ayah_no": 27,
+          "ayah": "God wishes to lighten your burdens, for, man has been created weak.",
+          "ayah_ar": "يُرِيدُ ٱللَّهُ أَن يُخَفِّفَ عَنكُمْ ۚ وَخُلِقَ ٱلْإِنسَٰنُ ضَعِيفًۭا",
+          "ayah_index": 520
+        },
+        {
+          "surah": "Al-Muzzammil",
+          "ayah_no": 1,
+          "ayah": "stand up to pray for much of the night.",
+          "ayah_ar": "قُمِ ٱلَّيْلَ إِلَّا قَلِيلًۭا",
+          "ayah_index": 5476
+        }
+      ],
+      "comfort": "Rest is not weakness — even our Prophet ﷺ rested. Be gentle with yourself today. Allah sees your effort even when you feel you have nothing left. 🤍",
+      "emotion_before": "tired",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:37:05.332424"
+    },
+    {
+      "entry": "My heart is broken I was betrayed by someone I trusted completely I can't forgive and can't let go",
+      "matches": [
+        {
+          "surah": "Al-An'am",
+          "ayah_no": 93,
+          "ayah": "And now you have returned to Us, alone as We created you at first, leaving behind all that We gave you. Nor do We see with you your intercessors, those you claimed were your partners with God. The link between you is cut and that which you presumed has failed you.",
+          "ayah_ar": "وَلَقَدْ جِئْتُمُونَا فُرَٰدَىٰ كَمَا خَلَقْنَٰكُمْ أَوَّلَ مَرَّةٍۢ وَتَرَكْتُم مَّا خَوَّلْنَٰكُمْ وَرَآءَ ظُهُورِكُمْ ۖ وَمَا نَرَىٰ مَعَكُمْ شُفَعَآءَكُمُ ٱلَّذِينَ زَعَمْتُمْ أَنَّهُمْ فِيكُمْ شُرَكَٰٓؤُا۟ ۚ لَقَد تَّقَطَّعَ بَيْنَكُمْ وَضَلَّ عَنكُم مَّا كُنتُمْ تَزْعُمُونَ",
+          "ayah_index": 882
+        },
+        {
+          "surah": "Ali 'Imran",
+          "ayah_no": 145,
+          "ayah": "How many a prophet has fought with many devout men alongside him! They did not lose heart, despite all that they had to suffer in God's path. They neither weakened nor yielded. God loves the patient!",
+          "ayah_ar": "وَكَأَيِّن مِّن نَّبِىٍّۢ قَٰتَلَ مَعَهُۥ رِبِّيُّونَ كَثِيرٌۭ فَمَا وَهَنُوا۟ لِمَآ أَصَابَهُمْ فِى سَبِيلِ ٱللَّهِ وَمَا ضَعُفُوا۟ وَمَا ٱسْتَكَانُوا۟ ۗ وَٱللَّهُ يُحِبُّ ٱلصَّٰبِرِينَ",
+          "ayah_index": 438
+        },
+        {
+          "surah": "Al-Anfal",
+          "ayah_no": 61,
+          "ayah": "Should they seek to deceive you, God is enough for you: it was He who strengthened you with His help, and rallied the faithful around you, and bound their hearts together.",
+          "ayah_ar": "وَإِن يُرِيدُوٓا۟ أَن يَخْدَعُوكَ فَإِنَّ حَسْبَكَ ٱللَّهُ ۚ هُوَ ٱلَّذِىٓ أَيَّدَكَ بِنَصْرِهِۦ وَبِٱلْمُؤْمِنِينَ",
+          "ayah_index": 1221
+        }
+      ],
+      "comfort": "A broken heart is still a heart that loved, and love is never wasted in Allah's eyes. He is the only one who can truly mend what is broken. 🌙",
+      "emotion_before": "heartbroken",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:37:05.919268"
+    },
+    {
+      "entry": "I feel hopeful today I really believe things are going to get better inshallah making dua and trusting Allah",
+      "matches": [
+        {
+          "surah": "Luqman",
+          "ayah_no": 16,
+          "ayah": "O my dear son! Say your prayers regularly, and enjoin good, and forbid evil, and endure patiently whatever may befall you. Surely, this is something which requires firm resolve.",
+          "ayah_ar": "يَٰبُنَىَّ أَقِمِ ٱلصَّلَوٰةَ وَأْمُرْ بِٱلْمَعْرُوفِ وَٱنْهَ عَنِ ٱلْمُنكَرِ وَٱصْبِرْ عَلَىٰ مَآ أَصَابَكَ ۖ إِنَّ ذَٰلِكَ مِنْ عَزْمِ ٱلْأُمُورِ",
+          "ayah_index": 3485
+        },
+        {
+          "surah": "Ad-Duhaa",
+          "ayah_no": 3,
+          "ayah": "and the Hereafter will indeed be better for you than the present life;",
+          "ayah_ar": "وَلَلْءَاخِرَةُ خَيْرٌۭ لَّكَ مِنَ ٱلْأُولَىٰ",
+          "ayah_index": 6082
+        },
+        {
+          "surah": "Hud",
+          "ayah_no": 33,
+          "ayah": "My advice will not benefit you, no matter how sincerely I want to advise you, if God lets you go astray. He is your Lord and you will all return to Him.\"",
+          "ayah_ar": "وَلَا يَنفَعُكُمْ نُصْحِىٓ إِنْ أَرَدتُّ أَنْ أَنصَحَ لَكُمْ إِن كَانَ ٱللَّهُ يُرِيدُ أَن يُغْوِيَكُمْ ۚ هُوَ رَبُّكُمْ وَإِلَيْهِ تُرْجَعُونَ",
+          "ayah_index": 1506
+        }
+      ],
+      "comfort": "That hope you feel? Hold onto it — it is a gift from Allah. He who gave you the hope will give you the thing you hope for, in His perfect time. 💛",
+      "emotion_before": "hopeful",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:37:06.986647"
+    },
+    {
+      "entry": "I don't know which direction to take in life I feel so lost and unclear about everything what to do",
+      "matches": [
+        {
+          "surah": "Ali 'Imran",
+          "ayah_no": 50,
+          "ayah": "God is my Lord and your Lord, so worship Him. That is the straight path.\"",
+          "ayah_ar": "إِنَّ ٱللَّهَ رَبِّى وَرَبُّكُمْ فَٱعْبُدُوهُ ۗ هَٰذَا صِرَٰطٌۭ مُّسْتَقِيمٌۭ",
+          "ayah_index": 343
+        },
+        {
+          "surah": "Al-Qasas",
+          "ayah_no": 55,
+          "ayah": "You cannot guide whoever you please: it is God who guides whom He will. He best knows those who would accept guidance.",
+          "ayah_ar": "إِنَّكَ لَا تَهْدِى مَنْ أَحْبَبْتَ وَلَٰكِنَّ ٱللَّهَ يَهْدِى مَن يَشَآءُ ۚ وَهُوَ أَعْلَمُ بِٱلْمُهْتَدِينَ",
+          "ayah_index": 3307
+        },
+        {
+          "surah": "Al-An'am",
+          "ayah_no": 70,
+          "ayah": "Say, \"Instead of God, shall we call upon that which can neither benefit us nor harm us? Are we to turn upon our heels after God has guided us, like one who, beguiled by devils in the land, wanders bewildered, his companions calling him to the right path, saying, \"Come to us\"?\" Say, \"God's guidance is the only guidance. We are commanded to surrender ourselves to the Lord of the Universe,",
+          "ayah_ar": "قُلْ أَنَدْعُوا۟ مِن دُونِ ٱللَّهِ مَا لَا يَنفَعُنَا وَلَا يَضُرُّنَا وَنُرَدُّ عَلَىٰٓ أَعْقَابِنَا بَعْدَ إِذْ هَدَىٰنَا ٱللَّهُ كَٱلَّذِى ٱسْتَهْوَتْهُ ٱلشَّيَٰطِينُ فِى ٱلْأَرْضِ حَيْرَانَ لَهُۥٓ أَصْحَٰبٌۭ يَدْعُونَهُۥٓ إِلَى ٱلْهُدَى ٱئْتِنَا ۗ قُلْ إِنَّ هُدَى ٱللَّهِ هُوَ ٱلْهُدَىٰ ۖ وَأُمِرْنَا لِنُسْلِمَ لِرَبِّ ٱلْعَٰلَمِينَ",
+          "ayah_index": 859
+        }
+      ],
+      "comfort": "Not knowing which way to go is the perfect time to turn to Allah. Pray Istikhara, make dua, trust that He will make the right path clear. 🌙",
+      "emotion_before": "confused",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:37:08.022730"
+    },
+    {
+      "entry": "I feel calm and at peace today my heart feels settled and I'm just grateful for everything around me",
+      "matches": [
+        {
+          "surah": "An-Nahl",
+          "ayah_no": 77,
+          "ayah": "God brought you forth from the wombs of your mothers while you knew nothing, and gave you hearing and sight and hearts, so that you might be grateful.",
+          "ayah_ar": "وَٱللَّهُ أَخْرَجَكُم مِّنۢ بُطُونِ أُمَّهَٰتِكُمْ لَا تَعْلَمُونَ شَيْـًۭٔا وَجَعَلَ لَكُمُ ٱلسَّمْعَ وَٱلْأَبْصَٰرَ وَٱلْأَفْـِٔدَةَ ۙ لَعَلَّكُمْ تَشْكُرُونَ",
+          "ayah_index": 1978
+        },
+        {
+          "surah": "Al-Kahf",
+          "ayah_no": 27,
+          "ayah": "Keep yourself attached to those who call on their Lord, morning and evening, seeking His pleasure; and do not let your eyes turn away from them, desiring the attraction of worldly life; and do not obey one whose heart We have made heedless of Our remembrance, one who pursues his own whims and becomes dissolute.",
+          "ayah_ar": "وَٱصْبِرْ نَفْسَكَ مَعَ ٱلَّذِينَ يَدْعُونَ رَبَّهُم بِٱلْغَدَوٰةِ وَٱلْعَشِىِّ يُرِيدُونَ وَجْهَهُۥ ۖ وَلَا تَعْدُ عَيْنَاكَ عَنْهُمْ تُرِيدُ زِينَةَ ٱلْحَيَوٰةِ ٱلدُّنْيَا ۖ وَلَا تُطِعْ مَنْ أَغْفَلْنَا قَلْبَهُۥ عَن ذِكْرِنَا وَٱتَّبَعَ هَوَىٰهُ وَكَانَ أَمْرُهُۥ فُرُطًۭا",
+          "ayah_index": 2167
+        },
+        {
+          "surah": "Al-Ma'un",
+          "ayah_no": 4,
+          "ayah": "but whose hearts are not in their prayer.",
+          "ayah_ar": "ٱلَّذِينَ هُمْ عَن صَلَاتِهِمْ سَاهُونَ",
+          "ayah_index": 6201
+        }
+      ],
+      "comfort": "Alhamdulillah for this peace. It is a sign that your heart is close to Allah. Protect this feeling through dhikr and gratitude. 🌿",
+      "emotion_before": "peaceful",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:37:08.677238"
+    },
+    {
+      "entry": "Today was a day. I just sat there. Things happened. I don't know.",
+      "matches": [
+        {
+          "surah": "Al-Hijr",
+          "ayah_no": 40,
+          "ayah": "God said, \"This is the path which leads straight to Me.",
+          "ayah_ar": "قَالَ هَٰذَا صِرَٰطٌ عَلَىَّ مُسْتَقِيمٌ",
+          "ayah_index": 1842
+        },
+        {
+          "surah": "Al-Baqarah",
+          "ayah_no": 96,
+          "ayah": "Say, \"Anyone who is an enemy of Gabriel, who by God's leave has brought down to your heart \\[the Quran\\] fulfilling that \\[predictions about the last prophet in the earlier revelations\\] which precedes it, and is a guidance and good news for the faithful,",
+          "ayah_ar": "قُلْ مَن كَانَ عَدُوًّۭا لِّجِبْرِيلَ فَإِنَّهُۥ نَزَّلَهُۥ عَلَىٰ قَلْبِكَ بِإِذْنِ ٱللَّهِ مُصَدِّقًۭا لِّمَا بَيْنَ يَدَيْهِ وَهُدًۭى وَبُشْرَىٰ لِلْمُؤْمِنِينَ",
+          "ayah_index": 103
+        },
+        {
+          "surah": "Al-Kahf",
+          "ayah_no": 26,
+          "ayah": "Proclaim what has been revealed to you from your Lord's Book. None can change His words. You shall find no refuge besides Him.",
+          "ayah_ar": "وَٱتْلُ مَآ أُوحِىَ إِلَيْكَ مِن كِتَابِ رَبِّكَ ۖ لَا مُبَدِّلَ لِكَلِمَٰتِهِۦ وَلَن تَجِدَ مِن دُونِهِۦ مُلْتَحَدًۭا",
+          "ayah_index": 2166
+        }
+      ],
+      "comfort": "Not knowing which way to go is the perfect time to turn to Allah. Pray Istikhara, make dua, trust that He will make the right path clear. 🌙",
+      "emotion_before": "confused",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:37:09.804720"
+    },
+    {
+      "entry": "I feel sad and lost today",
+      "matches": [
+        {
+          "surah": "At-Tawbah",
+          "ayah_no": 127,
+          "ayah": "There has come to you a Messenger of your own. Your suffering distresses him: he is deeply concerned for your welfare and full of kindness and mercy towards the believers.",
+          "ayah_ar": "لَقَدْ جَآءَكُمْ رَسُولٌۭ مِّنْ أَنفُسِكُمْ عَزِيزٌ عَلَيْهِ مَا عَنِتُّمْ حَرِيصٌ عَلَيْكُم بِٱلْمُؤْمِنِينَ رَءُوفٌۭ رَّحِيمٌۭ",
+          "ayah_index": 1362
+        }
+      ],
+      "comfort": "It's okay to feel sad. Even the Prophets wept. Allah does not waste your tears — every one of them is seen and counted. After hardship always comes ease. 💛",
+      "emotion_before": "sad",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:37:10.428964"
+    },
+    {
+      "entry": "I feel anxious and stressed about everything in my life right now",
+      "matches": [
+        {
+          "surah": "Luqman",
+          "ayah_no": 27,
+          "ayah": "Creating and resurrecting all of you is just like creating and resurrecting a single soul. Truly, God hears all and observes all.",
+          "ayah_ar": "مَّا خَلْقُكُمْ وَلَا بَعْثُكُمْ إِلَّا كَنَفْسٍۢ وَٰحِدَةٍ ۗ إِنَّ ٱللَّهَ سَمِيعٌۢ بَصِيرٌ",
+          "ayah_index": 3496
+        },
+        {
+          "surah": "An-Naml",
+          "ayah_no": 61,
+          "ayah": "Who responds to the oppressed when he calls out to Him, and relieves his suffering and who will make you inheritors of the earth? Then, is there a god besides God? How little you pay heed!",
+          "ayah_ar": "أَمَّن يُجِيبُ ٱلْمُضْطَرَّ إِذَا دَعَاهُ وَيَكْشِفُ ٱلسُّوٓءَ وَيَجْعَلُكُمْ خُلَفَآءَ ٱلْأَرْضِ ۗ أَءِلَٰهٌۭ مَّعَ ٱللَّهِ ۚ قَلِيلًۭا مَّا تَذَكَّرُونَ",
+          "ayah_index": 3220
+        },
+        {
+          "surah": "Al-Qalam",
+          "ayah_no": 11,
+          "ayah": "or to one who places obstacles in the way of good being done or to the wicked transgressor,",
+          "ayah_ar": "مَّنَّاعٍۢ لِّلْخَيْرِ مُعْتَدٍ أَثِيمٍ",
+          "ayah_index": 5282
+        },
+        {
+          "surah": "Al-Mumtahanah",
+          "ayah_no": 7,
+          "ayah": "He does not forbid you to deal kindly and justly with anyone who has not fought you on account of your faith or driven you out of your homes: God loves the just.",
+          "ayah_ar": "لَّا يَنْهَىٰكُمُ ٱللَّهُ عَنِ ٱلَّذِينَ لَمْ يُقَٰتِلُوكُمْ فِى ٱلدِّينِ وَلَمْ يُخْرِجُوكُم مِّن دِيَٰرِكُمْ أَن تَبَرُّوهُمْ وَتُقْسِطُوٓا۟ إِلَيْهِمْ ۚ إِنَّ ٱللَّهَ يُحِبُّ ٱلْمُقْسِطِينَ",
+          "ayah_index": 5157
+        },
+        {
+          "surah": "Az-Zumar",
+          "ayah_no": 61,
+          "ayah": "God is the Creator of all things, He has charge of everything;",
+          "ayah_ar": "ٱللَّهُ خَٰلِقُ كُلِّ شَىْءٍۢ ۖ وَهُوَ عَلَىٰ كُلِّ شَىْءٍۢ وَكِيلٌۭ",
+          "ayah_index": 4119
+        }
+      ],
+      "comfort": "When everything feels too much, remember: Allah is closer to you than your own heartbeat. You don't have to solve it all today. Just take the next small step. 🌿",
+      "emotion_before": "stressed",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:37:11.083107"
+    },
+    {
+      "entry": "I feel hopeful today I really believe things are going to get better inshallah making dua and trusting Allah",
+      "matches": [
+        {
+          "surah": "Yunus",
+          "ayah_no": 63,
+          "ayah": "there is good news in this life and in the Hereafter: the Word of God shall never change. That is the supreme triumph.",
+          "ayah_ar": "لَهُمُ ٱلْبُشْرَىٰ فِى ٱلْحَيَوٰةِ ٱلدُّنْيَا وَفِى ٱلْءَاخِرَةِ ۚ لَا تَبْدِيلَ لِكَلِمَٰتِ ٱللَّهِ ۚ ذَٰلِكَ هُوَ ٱلْفَوْزُ ٱلْعَظِيمُ",
+          "ayah_index": 1427
+        },
+        {
+          "surah": "Ghafir",
+          "ayah_no": 54,
+          "ayah": "So be patient, for what God has promised is sure to come. Ask forgiveness for your sins; praise your Lord morning and evening.",
+          "ayah_ar": "فَٱصْبِرْ إِنَّ وَعْدَ ٱللَّهِ حَقٌّۭ وَٱسْتَغْفِرْ لِذَنۢبِكَ وَسَبِّحْ بِحَمْدِ رَبِّكَ بِٱلْعَشِىِّ وَٱلْإِبْكَٰرِ",
+          "ayah_index": 4187
+        },
+        {
+          "surah": "Ash-Shu'ara",
+          "ayah_no": 50,
+          "ayah": "We hope our Lord will forgive us, as we are the first of the believers.\"",
+          "ayah_ar": "إِنَّا نَطْمَعُ أَن يَغْفِرَ لَنَا رَبُّنَا خَطَٰيَٰنَآ أَن كُنَّآ أَوَّلَ ٱلْمُؤْمِنِينَ",
+          "ayah_index": 2982
+        }
+      ],
+      "comfort": "That hope you feel? Hold onto it — it is a gift from Allah. He who gave you the hope will give you the thing you hope for, in His perfect time. 💛",
+      "emotion_before": "hopeful",
+      "emotion_after": null,
+      "timestamp": "2026-03-25T09:37:17.629631"
     }
   ],
   "bookmarks": [
@@ -1960,6 +2380,15 @@
       "ayah_ar": "قُلْ إِن كَانَتْ لَكُمُ ٱلدَّارُ ٱلْءَاخِرَةُ عِندَ ٱللَّهِ خَالِصَةًۭ مِّن دُونِ ٱلنَّاسِ فَتَمَنَّوُا۟ ٱلْمَوْتَ إِن كُنتُمْ صَٰدِقِينَ",
       "note": "",
       "saved_at": "2026-03-15T07:01:28.772093"
+    }
+  ],
+  "feedback": [
+    {
+      "entry_id": 65,
+      "ayah_index": 1521,
+      "emotion": "reflective",
+      "rating": -1,
+      "timestamp": "2026-03-25T09:36:12.547639"
     }
   ]
 }

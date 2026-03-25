@@ -22,13 +22,10 @@
 .info .note { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
 .run-one { font-size: 11px; padding: 3px 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-secondary); cursor: pointer; flex-shrink: 0; }
 .run-one:hover { background: var(--color-background-secondary); }
-.result { margin-top: 8px; font-size: 12px; padding: 8px 10px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-secondary); white-space: pre-wrap; word-break: break-word; max-height: 180px; overflow-y: auto; display: none; line-height: 1.6; }
+.result { margin-top: 8px; font-size: 12px; padding: 8px 10px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-secondary); white-space: pre-wrap; word-break: break-word; max-height: 320px; overflow-y: auto; display: none; line-height: 1.7; }
 .result.show { display: block; }
 .result.pass { border-left: 3px solid #1D9E75; }
 .result.fail { border-left: 3px solid #E24B4A; }
-.prompt-box { margin-top: 8px; font-size: 11px; padding: 6px 10px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-secondary); white-space: pre-wrap; word-break: break-word; border-left: 3px solid #7B5CF0; display: none; line-height: 1.5; opacity: 0.85; }
-.prompt-box.show { display: block; }
-.prompt-label { font-size: 10px; font-weight: 600; color: #7B5CF0; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
 .method { display: inline-block; font-size: 10px; padding: 1px 5px; border-radius: 3px; margin-right: 4px; font-weight: 500; }
 .POST { background: #E6F1FB; color: #185FA5; }
 .GET { background: #EAF3DE; color: #3B6D11; }
@@ -70,67 +67,67 @@ const TESTS = [
   { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: sad", note:"Crying, empty, nothing matters",
     body:{entry:"I have been crying all day and feel so empty inside like nothing matters anymore",top_n:3},
     check: r=>r.matches?.length===3,
-    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}\nComfort: ${r.comfort?.slice(0,120)}...` },
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
 
   { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: stressed", note:"Exams, can't sleep, will fail",
     body:{entry:"I'm so stressed about my exams I haven't slept properly in days and I feel like I'm going to fail everything",top_n:3},
     check: r=>r.matches?.length===3,
-    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
 
   { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: grateful", note:"Blessed, alhamdulillah",
     body:{entry:"Alhamdulillah I just got news that made me realize how blessed I truly am so much gratitude in my heart",top_n:3},
     check: r=>r.matches?.length===3,
-    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
 
   { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: lonely", note:"Nobody sees me, invisible",
     body:{entry:"I feel completely alone nobody checks on me nobody sees me I'm invisible to everyone around me",top_n:3},
     check: r=>r.matches?.length===3,
-    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
 
   { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: angry", note:"Injustice, unfair",
     body:{entry:"I'm so angry it's not fair I've been treated with such injustice and I can't let it go",top_n:3},
     check: r=>r.matches?.length===3,
-    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
 
   { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: tired", note:"Exhausted, drained, can't go on",
     body:{entry:"I'm exhausted completely drained I have nothing left to give I can't go on like this anymore",top_n:3},
     check: r=>r.matches?.length===3,
-    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
 
   { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: heartbroken", note:"Betrayal, broken trust",
     body:{entry:"My heart is broken I was betrayed by someone I trusted completely I can't forgive and can't let go",top_n:3},
     check: r=>r.matches?.length===3,
-    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
 
   { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: hopeful", note:"Inshallah, dua, trust Allah",
     body:{entry:"I feel hopeful today I really believe things are going to get better inshallah making dua and trusting Allah",top_n:3},
     check: r=>r.matches?.length===3,
-    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
 
   { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: confused", note:"Lost, no direction",
     body:{entry:"I don't know which direction to take in life I feel so lost and unclear about everything what to do",top_n:3},
     check: r=>r.matches?.length===3,
-    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
 
   { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: peaceful", note:"Calm, settled heart",
     body:{entry:"I feel calm and at peace today my heart feels settled and I'm just grateful for everything around me",top_n:3},
     check: r=>r.matches?.length===3,
-    show: r=>`Detected: ${r.emotion_before}\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}: ${m.ayah.slice(0,90)}...`).join('\n')}` },
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
 
   { g:"match", m:"POST", p:"/match-ayahs", label:"LLM fallback — vague", note:"No keywords, triggers LLM",
     body:{entry:"Today was a day. I just sat there. Things happened. I don't know.",top_n:3},
     check: r=>r.matches?.length>0,
-    show: r=>`Detected: ${r.emotion_before} | Matches: ${r.matches?.length}` },
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}` },
 
   { g:"match", m:"POST", p:"/match-ayahs", label:"top_n: 1", note:"Should return exactly 1",
     body:{entry:"I feel sad and lost today",top_n:1},
     check: r=>r.matches?.length===1,
-    show: r=>`Matches returned: ${r.matches?.length} (expected 1)` },
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}` },
 
   { g:"match", m:"POST", p:"/match-ayahs", label:"top_n: 5", note:"Should return exactly 5",
     body:{entry:"I feel anxious and stressed about everything in my life right now",top_n:5},
     check: r=>r.matches?.length===5,
-    show: r=>`Matches returned: ${r.matches?.length} (expected 5)` },
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}` },
 
   { g:"emotion", m:"POST", p:"/update-emotion", label:"Update emotion — valid", note:"entry_id 0 → peaceful",
     body:{entry_id:0,emotion_after:"peaceful"},
@@ -219,7 +216,7 @@ async function runOne(idx) {
       txt = passed ? `Got expected ${t.expectErr}` : `Expected ${t.expectErr}, got ${res.status}\n${JSON.stringify(data).slice(0,200)}`;
     } else {
       passed = res.ok && (!t.check || t.check(data));
-      txt = passed && t.show ? t.show(data) : (!passed ? `Status ${res.status}\n${JSON.stringify(data).slice(0,300)}` : `OK`);
+      txt = passed && t.show ? t.show(data, t) : (!passed ? `Status ${res.status}\n${JSON.stringify(data).slice(0,300)}` : `OK`);
     }
 
     dot.className = 'dot ' + (passed ? 'pass' : 'fail');
@@ -274,7 +271,6 @@ groups.forEach(g => {
     if (t.g !== g) return;
     const card = document.createElement('div');
     card.className = 'test-card';
-    const promptHtml = t.body ? ('<div class="prompt-box show"><span class="prompt-label">Request Body</span><pre style="margin:0;font-size:11px;font-family:monospace;white-space:pre-wrap">' + JSON.stringify(t.body, null, 2) + '</pre></div>') : '';
     card.innerHTML = `
       <div class="test-row">
         <div class="dot" id="d${i}"></div>
@@ -284,7 +280,6 @@ groups.forEach(g => {
         </div>
         <button class="run-one" onclick="runOne(${i})">Run</button>
       </div>
-      ` + promptHtml + `
       <div class="result" id="b${i}"></div>`;
     container.appendChild(card);
   });
