@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quran API Tester</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface-2: #1f2435;
+    --border: #2a2f42;
+    --border-bright: #3a4060;
+    --text: #e8eaf0;
+    --text-muted: #7a82a0;
+    --text-dim: #4a5070;
+    --accent: #6C8EF5;
+    --accent-glow: rgba(108,142,245,0.15);
+    --green: #34d399;
+    --green-bg: rgba(52,211,153,0.08);
+    --green-border: rgba(52,211,153,0.25);
+    --red: #f87171;
+    --red-bg: rgba(248,113,113,0.08);
+    --red-border: rgba(248,113,113,0.25);
+    --amber: #fbbf24;
+    --amber-bg: rgba(251,191,36,0.1);
+    --get: #34d399;
+    --get-bg: rgba(52,211,153,0.1);
+    --post: #6C8EF5;
+    --post-bg: rgba(108,142,245,0.1);
+    --delete: #f87171;
+    --delete-bg: rgba(248,113,113,0.1);
+    --font: 'Sora', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 28px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .header-icon {
+    width: 36px; height: 36px;
+    background: var(--accent-glow);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .header-title { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+  .header-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; font-family: var(--mono); }
+
+  /* ── Main layout ── */
+  .main { padding: 24px 28px; max-width: 960px; margin: 0 auto; }
+
+  /* ── URL Bar ── */
+  .url-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .url-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .url-input {
+    flex: 1;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .url-input::placeholder { color: var(--text-dim); }
+  .url-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .btn-run-all {
+    background: var(--accent);
+    color: #0a0e1a;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 9px 20px;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s, transform 0.1s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-run-all:hover { opacity: 0.88; }
+  .btn-run-all:active { transform: scale(0.97); }
+
+  /* ── Progress ── */
+  .progress-wrap {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 20px;
+    display: none;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    width: 0%;
+    transition: width 0.35s ease;
+    border-radius: 2px;
+  }
+
+  /* ── Stats ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .stat-icon {
+    width: 32px; height: 32px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .stat-icon.total { background: rgba(122,130,160,0.12); }
+  .stat-icon.pass { background: var(--green-bg); }
+  .stat-icon.fail { background: var(--red-bg); }
+  .stat-icon.pend { background: var(--amber-bg); }
+  .stat-body { flex: 1; min-width: 0; }
+  .stat-n {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.5px;
+  }
+  .stat-n.total { color: var(--text); }
+  .stat-n.pass { color: var(--green); }
+  .stat-n.fail { color: var(--red); }
+  .stat-n.pend { color: var(--amber); }
+  .stat-l { font-size: 11px; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+  }
+  .btn-export {
+    background: transparent;
+    border: 1px solid var(--border-bright);
+    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    padding: 7px 14px;
+    font-size: 12px;
+    font-family: var(--font);
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-export:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── Group sections ── */
+  .group-section { margin-bottom: 28px; }
+  .group-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .group-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .group-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .group-count {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 7px;
+  }
+
+  /* ── Test cards ── */
+  .test-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 6px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .test-card:hover { border-color: var(--border-bright); }
+  .test-card.status-pass { border-left: 3px solid var(--green); }
+  .test-card.status-fail { border-left: 3px solid var(--red); }
+  .test-card.status-running { border-left: 3px solid var(--amber); }
+
+  .test-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+  }
+
+  /* Status indicator */
+  .status-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--border-bright);
+    flex-shrink: 0;
+    transition: background 0.2s;
+    position: relative;
+  }
+  .status-dot.running {
+    background: var(--amber);
+    animation: pulse 0.8s ease-in-out infinite alternate;
+  }
+  .status-dot.pass { background: var(--green); }
+  .status-dot.fail { background: var(--red); }
+  @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
+
+  /* Method badge */
+  .method-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    letter-spacing: 0.03em;
+  }
+  .method-GET    { color: var(--get);    background: var(--get-bg);    border: 1px solid rgba(52,211,153,0.2); }
+  .method-POST   { color: var(--post);   background: var(--post-bg);   border: 1px solid rgba(108,142,245,0.2); }
+  .method-DELETE { color: var(--delete); background: var(--delete-bg); border: 1px solid rgba(248,113,113,0.2); }
+
+  /* Path */
+  .test-path {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  /* Divider */
+  .test-divider { width: 1px; height: 14px; background: var(--border); flex-shrink: 0; }
+
+  /* Info */
+  .test-info { flex: 1; min-width: 0; }
+  .test-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .test-note {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Run button */
+  .btn-run-one {
+    font-size: 11px;
+    font-family: var(--mono);
+    padding: 4px 11px;
+    border: 1px solid var(--border-bright);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .btn-run-one:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+
+  /* ── Result box ── */
+  .result-box {
+    display: none;
+    margin: 0 14px 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.75;
+  }
+  .result-box.show { display: block; }
+  .result-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+  }
+  .result-status-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .result-status-label.pass { color: var(--green); }
+  .result-status-label.fail { color: var(--red); }
+  .result-status-label.running { color: var(--amber); }
+  .result-content {
+    padding: 10px 14px;
+    color: var(--text-muted);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .result-content::-webkit-scrollbar { width: 4px; }
+  .result-content::-webkit-scrollbar-track { background: transparent; }
+  .result-content::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+
+  .result-box.pass .result-header { border-left: none; border-bottom-color: var(--green-border); }
+  .result-box.fail .result-header { border-bottom-color: var(--red-border); }
+  .result-box.pass .result-content { color: #a7f3d0; }
+  .result-box.fail .result-content { color: #fca5a5; }
+
+  /* Fade-in for result boxes */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+  .result-box.show { animation: fadeIn 0.2s ease; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">📖</div>
+  <div>
+    <div class="header-title">Quran API Tester</div>
+    <div class="header-sub">Endpoint validation suite · v2</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- URL Bar -->
+  <div class="url-section">
+    <span class="url-label">Base URL</span>
+    <input class="url-input" id="baseUrl" type="text" placeholder="https://your-url.ngrok-free.dev" />
+    <button class="btn-run-all" onclick="runAll()">
+      <span>▶</span> Run All
+    </button>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap" id="prog">
+    <div class="progress-bar" id="bar"></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon total">🧪</div>
+      <div class="stat-body">
+        <div class="stat-n total" id="sTotal">0</div>
+        <div class="stat-l">Total</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon pass">✅</div>
+      <div class="stat-body">
+        <div class="stat-n pass" id="sPass">0</div>
+        <div class="stat-l">Passed</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon fail">❌</div>
+      <div class="stat-body">
+        <div class="stat-n fail" id="sFail">0</div>
+        <div class="stat-l">Failed</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon pend">⏳</div>
+      <div class="stat-body">
+        <div class="stat-n pend" id="sPend">0</div>
+        <div class="stat-l">Pending</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <button class="btn-export" onclick="exportAll()">
+      ↓ Export JSON
+    </button>
+  </div>
+
+  <!-- Tests container -->
+  <div id="tests"></div>
+
+</div>
+
+<script>
+const TESTS = [
+  { g:"health", m:"GET", p:"/health", label:"Health check", note:"Server up + ayahs loaded",
+    check: r => r.status==="ok" && r.ayahs_loaded > 0,
+    show: r => `status: ${r.status} | ayahs_loaded: ${r.ayahs_loaded} | history: ${r.history_count} | bookmarks: ${r.bookmarks_count}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: sad", note:"Crying, empty, nothing matters",
+    body:{entry:"I have been crying all day and feel so empty inside like nothing matters anymore",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: stressed", note:"Exams, can't sleep, will fail",
+    body:{entry:"I'm so stressed about my exams I haven't slept properly in days and I feel like I'm going to fail everything",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: grateful", note:"Blessed, alhamdulillah",
+    body:{entry:"Alhamdulillah I just got news that made me realize how blessed I truly am so much gratitude in my heart",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: lonely", note:"Nobody sees me, invisible",
+    body:{entry:"I feel completely alone nobody checks on me nobody sees me I'm invisible to everyone around me",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: angry", note:"Injustice, unfair",
+    body:{entry:"I'm so angry it's not fair I've been treated with such injustice and I can't let it go",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: tired", note:"Exhausted, drained, can't go on",
+    body:{entry:"I'm exhausted completely drained I have nothing left to give I can't go on like this anymore",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: heartbroken", note:"Betrayal, broken trust",
+    body:{entry:"My heart is broken I was betrayed by someone I trusted completely I can't forgive and can't let go",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: hopeful", note:"Inshallah, dua, trust Allah",
+    body:{entry:"I feel hopeful today I really believe things are going to get better inshallah making dua and trusting Allah",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: confused", note:"Lost, no direction",
+    body:{entry:"I don't know which direction to take in life I feel so lost and unclear about everything what to do",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"Emotion: peaceful", note:"Calm, settled heart",
+    body:{entry:"I feel calm and at peace today my heart feels settled and I'm just grateful for everything around me",top_n:3},
+    check: r=>r.matches?.length===3,
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}\n\n💬 Comfort: ${r.comfort}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"LLM fallback — vague", note:"No keywords, triggers LLM",
+    body:{entry:"Today was a day. I just sat there. Things happened. I don't know.",top_n:3},
+    check: r=>r.matches?.length>0,
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"top_n: 1", note:"Should return exactly 1",
+    body:{entry:"I feel sad and lost today",top_n:1},
+    check: r=>r.matches?.length===1,
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}` },
+
+  { g:"match", m:"POST", p:"/match-ayahs", label:"top_n: 5", note:"Should return exactly 5",
+    body:{entry:"I feel anxious and stressed about everything in my life right now",top_n:5},
+    check: r=>r.matches?.length===5,
+    show: (r,t)=>`📝 Entry: "${t.body.entry}"\n🎭 Detected: ${r.emotion_before}\n\n${r.matches.map((m,i)=>`${i+1}. ${m.surah} ${m.ayah_no}:\n   "${m.ayah}"`).join('\n\n')}` },
+
+  { g:"emotion", m:"POST", p:"/update-emotion", label:"Update emotion — valid", note:"entry_id 0 → peaceful",
+    body:{entry_id:0,emotion_after:"peaceful"},
+    check: r=>r.message?.includes("updated"),
+    show: r=>`${r.message}` },
+
+  { g:"emotion", m:"POST", p:"/update-emotion", label:"Update emotion — invalid ID", note:"Should 404",
+    body:{entry_id:9999,emotion_after:"happy"},
+    expectErr:404, show: r=>`Got expected 404` },
+
+  { g:"history", m:"GET", p:"/history", label:"Get history", note:"Should have entries from match tests",
+    check: r=>Array.isArray(r)&&r.length>0,
+    show: r=>`${r.length} entries. Emotions: ${[...new Set(r.map(e=>e.emotion_before))].join(', ')}` },
+
+  { g:"history", m:"DELETE", p:"/delete-entry/0", label:"Delete entry — valid", note:"Should delete entry 0",
+    check: r=>r.message?.includes("Deleted"),
+    show: r=>`${r.message}` },
+
+  { g:"history", m:"DELETE", p:"/delete-entry/9999", label:"Delete entry — invalid", note:"Should 404",
+    expectErr:404, show: r=>`Got expected 404` },
+
+  { g:"bookmarks", m:"POST", p:"/bookmark", label:"Add bookmark with note", note:"ayah_index: 42",
+    body:{ayah_index:42,note:"This one really hit me"},
+    check: r=>r.ayah_index===42&&!!r.ayah_ar,
+    show: r=>`Saved: ${r.surah} ${r.ayah_no} | ${r.ayah?.slice(0,60)}...` },
+
+  { g:"bookmarks", m:"POST", p:"/bookmark", label:"Duplicate bookmark", note:"Same index, no duplicate",
+    body:{ayah_index:42,note:"another note"},
+    check: r=>r.ayah_index===42,
+    show: r=>`Returned existing: ${r.surah} ${r.ayah_no}` },
+
+  { g:"bookmarks", m:"POST", p:"/bookmark", label:"Bookmark — no note", note:"ayah_index: 100",
+    body:{ayah_index:100},
+    check: r=>r.ayah_index===100,
+    show: r=>`Saved: ${r.surah} ${r.ayah_no}` },
+
+  { g:"bookmarks", m:"POST", p:"/bookmark", label:"Bookmark — invalid index", note:"Should 400",
+    body:{ayah_index:-1},
+    expectErr:400, show: r=>`Got expected 400` },
+
+  { g:"bookmarks", m:"GET", p:"/bookmarks", label:"Get bookmarks", note:"Should have 2",
+    check: r=>Array.isArray(r)&&r.length>=2,
+    show: r=>`${r.length} bookmarks: indices ${r.map(b=>b.ayah_index).join(', ')}` },
+
+  { g:"bookmarks", m:"DELETE", p:"/bookmark/42", label:"Remove bookmark — valid", note:"Remove index 42",
+    check: r=>r.message?.includes("removed"),
+    show: r=>`${r.message}` },
+
+  { g:"bookmarks", m:"DELETE", p:"/bookmark/9999", label:"Remove bookmark — not found", note:"Should 404",
+    expectErr:404, show: r=>`Got expected 404` },
+
+  { g:"pattern", m:"GET", p:"/pattern", label:"Get pattern", note:"Emotion stats after all entries",
+    check: r=>r.total_entries>=0&&!!r.dominant_emotion,
+    show: r=>`Entries: ${r.total_entries} | Dominant: ${r.dominant_emotion} | Positive shifts: ${r.shift_to_positive} | Top surah: ${r.most_shown_surah}` },
+
+  { g:"reflect", m:"POST", p:"/reflect-again/1?top_n=3", label:"Reflect again — valid", note:"Fresh ayahs for entry 1",
+    check: r=>r.matches?.length>0,
+    show: r=>`New ayahs: ${r.matches?.map(m=>`${m.surah} ${m.ayah_no}`).join(', ')}` },
+
+  { g:"reflect", m:"POST", p:"/reflect-again/9999", label:"Reflect again — invalid", note:"Should 404",
+    expectErr:404, show: r=>`Got expected 404` },
+];
+
+const results = {};
+const GROUP_ICONS = { health:'💚', match:'🎭', emotion:'💫', history:'📜', bookmarks:'🔖', pattern:'📊', reflect:'🔄' };
+
+function base() { return document.getElementById('baseUrl').value.replace(/\/$/,''); }
+
+function setCardStatus(cardEl, status) {
+  cardEl.classList.remove('status-pass','status-fail','status-running');
+  if (status) cardEl.classList.add('status-' + status);
+}
+
+async function runOne(idx) {
+  const t = TESTS[idx];
+  const dot = document.getElementById('d'+idx);
+  const box = document.getElementById('b'+idx);
+  const header = document.getElementById('bh'+idx);
+  const content = document.getElementById('bc'+idx);
+  const card = document.getElementById('card'+idx);
+
+  dot.className = 'status-dot running';
+  box.className = 'result-box show running';
+  header.className = 'result-header';
+  document.getElementById('bhl'+idx).className = 'result-status-label running';
+  document.getElementById('bhl'+idx).textContent = 'Running…';
+  content.textContent = 'Waiting for response…';
+  setCardStatus(card, 'running');
+
+  try {
+    const opts = { method: t.m, headers: {'Content-Type':'application/json', 'ngrok-skip-browser-warning':'true'} };
+    if (t.body) opts.body = JSON.stringify(t.body);
+    const res = await fetch(base() + t.p, opts);
+    let data = {};
+    try { data = await res.json(); } catch(e) {}
+
+    let passed, txt;
+    if (t.expectErr) {
+      passed = res.status === t.expectErr;
+      txt = passed ? `✓ Got expected ${t.expectErr}` : `Expected ${t.expectErr}, got ${res.status}\n${JSON.stringify(data).slice(0,200)}`;
+    } else {
+      passed = res.ok && (!t.check || t.check(data));
+      txt = passed && t.show ? t.show(data, t) : (!passed ? `HTTP ${res.status}\n${JSON.stringify(data).slice(0,300)}` : 'OK');
+    }
+
+    const cls = passed ? 'pass' : 'fail';
+    dot.className = 'status-dot ' + cls;
+    box.className = 'result-box show ' + cls;
+    document.getElementById('bhl'+idx).className = 'result-status-label ' + cls;
+    document.getElementById('bhl'+idx).textContent = passed ? '✓ PASS' : '✗ FAIL';
+    content.textContent = txt;
+    setCardStatus(card, cls);
+    results[idx] = { label:t.label, group:t.g, method:t.m, path:t.p, passed, status:res.status, data };
+  } catch(e) {
+    dot.className = 'status-dot fail';
+    box.className = 'result-box show fail';
+    document.getElementById('bhl'+idx).className = 'result-status-label fail';
+    document.getElementById('bhl'+idx).textContent = '✗ NETWORK ERROR';
+    content.textContent = `${e.message}\n\nMake sure your ngrok URL is correct and uvicorn is running.`;
+    setCardStatus(card, 'fail');
+    results[idx] = { label:t.label, passed:false, error:e.message };
+  }
+  updateStats();
+}
+
+async function runAll() {
+  const prog = document.getElementById('prog');
+  const bar = document.getElementById('bar');
+  prog.style.display = 'block';
+  bar.style.width = '0%';
+  for (let i = 0; i < TESTS.length; i++) {
+    await runOne(i);
+    bar.style.width = Math.round((i+1)/TESTS.length*100)+'%';
+    await new Promise(r=>setTimeout(r,400));
+  }
+  setTimeout(()=>prog.style.display='none', 1200);
+}
+
+function updateStats() {
+  const vals = Object.values(results);
+  document.getElementById('sTotal').textContent = TESTS.length;
+  document.getElementById('sPass').textContent = vals.filter(r=>r.passed).length;
+  document.getElementById('sFail').textContent = vals.filter(r=>!r.passed).length;
+  document.getElementById('sPend').textContent = TESTS.length - vals.length;
+}
+
+function exportAll() {
+  const out = TESTS.map((t,i)=>({ id:i, group:t.g, label:t.label, method:t.m, path:t.p, result: results[i]||{passed:null,status:'not run'} }));
+  const blob = new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'quran_test_results.json'; a.click();
+}
+
+// ── Render ──
+const groups = [...new Set(TESTS.map(t=>t.g))];
+const container = document.getElementById('tests');
+
+groups.forEach(g => {
+  const groupTests = TESTS.map((t,i)=>({t,i})).filter(({t})=>t.g===g);
+  const section = document.createElement('div');
+  section.className = 'group-section';
+
+  const header = document.createElement('div');
+  header.className = 'group-header';
+  header.innerHTML = `
+    <div class="group-dot"></div>
+    <div class="group-name">${GROUP_ICONS[g]||''} ${g}</div>
+    <div class="group-count">${groupTests.length} test${groupTests.length!==1?'s':''}</div>
+  `;
+  section.appendChild(header);
+
+  groupTests.forEach(({t, i}) => {
+    const card = document.createElement('div');
+    card.className = 'test-card';
+    card.id = 'card'+i;
+    card.innerHTML = `
+      <div class="test-row">
+        <div class="status-dot" id="d${i}"></div>
+        <span class="method-badge method-${t.m}">${t.m}</span>
+        <span class="test-path">${t.p.split('?')[0]}</span>
+        <div class="test-divider"></div>
+        <div class="test-info">
+          <div class="test-label">${t.label}</div>
+          <div class="test-note">${t.note}</div>
+        </div>
+        <button class="btn-run-one" onclick="runOne(${i})">Run ▶</button>
+      </div>
+      <div class="result-box" id="b${i}">
+        <div class="result-header" id="bh${i}">
+          <span class="result-status-label" id="bhl${i}"></span>
+        </div>
+        <div class="result-content" id="bc${i}"></div>
+      </div>
+    `;
+    section.appendChild(card);
+  });
+
+  container.appendChild(section);
+});
+
+updateStats();
+</script>
+</body>
+</html>

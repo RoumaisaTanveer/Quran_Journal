@@ -17,7 +17,7 @@ OPENROUTER_URL     = os.getenv("OPENROUTER_URL", "https://openrouter.ai/api/v1/c
 GPT_MODEL          = os.getenv("GPT_MODEL", "mistralai/mistral-7b-instruct")
 
 DATA_FILE      = Path("data.json")
-CSV_FILE       = "quran_emotion_tagged.csv"
+CSV_FILE       = "quran_emotion_retagged_v3 (1).csv"
 SCORE_CUTOFF   = 0.25
 SIM_THRESHOLD  = 0.20
 TOP_CANDIDATES = 15

@@ -72,53 +72,234 @@ print("="*60 + "\n")
 # ── HEALTH ──────────────────────────────────────────────────────
 print("── HEALTH ──")
 run("Health check", "GET", "/health", note="Server up + ayahs loaded")
-
-# ── MATCH AYAHS ─────────────────────────────────────────────────
 print("\n── MATCH AYAHS ──")
 
-r = run("Emotion: sad", "POST", "/match-ayahs",
-    body={"entry": "I have been crying all day and feel so empty inside like nothing matters anymore", "top_n": 3})
+# Core emotions (clear, simple cases)
+run(
+    "Emotion: sad — clear grief",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I have been crying all day and feel so empty inside like nothing matters anymore",
+        "top_n": 3,
+    },
+)
 
-run("Emotion: stressed", "POST", "/match-ayahs",
-    body={"entry": "I'm so stressed about my exams I haven't slept properly in days and I feel like I'm going to fail everything", "top_n": 3})
+run(
+    "Emotion: stressed — exams",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I'm so stressed about my exams I haven't slept properly in days and I feel like I'm going to fail everything",
+        "top_n": 3,
+    },
+)
 
-run("Emotion: grateful", "POST", "/match-ayahs",
-    body={"entry": "Alhamdulillah I just got news that made me realize how blessed I truly am so much gratitude in my heart", "top_n": 3})
+run(
+    "Emotion: grateful — blessings",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "Alhamdulillah I just got news that made me realize how blessed I truly am, so much gratitude in my heart",
+        "top_n": 3,
+    },
+)
 
-run("Emotion: lonely", "POST", "/match-ayahs",
-    body={"entry": "I feel completely alone nobody checks on me nobody sees me I'm invisible to everyone around me", "top_n": 3})
+run(
+    "Emotion: lonely — unseen",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I feel completely alone, nobody checks on me, nobody sees me, I'm invisible to everyone around me",
+        "top_n": 3,
+    },
+)
 
-run("Emotion: angry", "POST", "/match-ayahs",
-    body={"entry": "I'm so angry it's not fair I've been treated with such injustice and I can't let it go", "top_n": 3})
+run(
+    "Emotion: angry — injustice",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I'm so angry, it's not fair, I've been treated with such injustice and I can't let it go",
+        "top_n": 3,
+    },
+)
 
-run("Emotion: tired", "POST", "/match-ayahs",
-    body={"entry": "I'm exhausted completely drained I have nothing left to give I can't go on like this anymore", "top_n": 3})
+run(
+    "Emotion: tired — burnout",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I'm exhausted, completely drained, I have nothing left to give, I can't go on like this anymore",
+        "top_n": 3,
+    },
+)
 
-run("Emotion: heartbroken", "POST", "/match-ayahs",
-    body={"entry": "My heart is broken I was betrayed by someone I trusted completely I can't forgive and can't let go", "top_n": 3})
+run(
+    "Emotion: heartbroken — betrayal",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "My heart is broken, I was betrayed by someone I trusted completely, I can't forgive and can't let go",
+        "top_n": 3,
+    },
+)
 
-run("Emotion: hopeful", "POST", "/match-ayahs",
-    body={"entry": "I feel hopeful today I really believe things are going to get better inshallah making dua and trusting Allah", "top_n": 3})
+run(
+    "Emotion: hopeful — future",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I feel hopeful today, I really believe things are going to get better inshallah, making dua and trusting Allah",
+        "top_n": 3,
+    },
+)
 
-run("Emotion: confused", "POST", "/match-ayahs",
-    body={"entry": "I don't know which direction to take in life I feel so lost and unclear about everything what to do", "top_n": 3})
+run(
+    "Emotion: confused — life direction",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I don't know which direction to take in life, I feel so lost and unclear about everything, what should I do",
+        "top_n": 3,
+    },
+)
 
-run("Emotion: peaceful", "POST", "/match-ayahs",
-    body={"entry": "I feel calm and at peace today my heart feels settled and I'm just grateful for everything around me", "top_n": 3})
+run(
+    "Emotion: peaceful — calm contentment",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I feel calm and at peace today, my heart feels settled and I'm just grateful for everything around me",
+        "top_n": 3,
+    },
+)
 
-run("LLM fallback — vague", "POST", "/match-ayahs",
-    body={"entry": "Today was a day. I just sat there. Things happened. I don't know.", "top_n": 3},
-    note="No keywords — should trigger LLM")
+# Darker / safety‑critical cases
+run(
+    "Emotion: despair — passive suicidal",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I don't want to exist anymore, I feel like everyone would be better off without me, life feels pointless",
+        "top_n": 3,
+    },
+)
 
-run("top_n: 1", "POST", "/match-ayahs",
-    body={"entry": "I feel sad and lost today", "top_n": 1},
-    note="Should return exactly 1 match")
+run(
+    "Emotion: self‑blame — guilt and shame",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I hate myself for the mistakes I've made, I feel like Allah will never forgive me and I don't deserve mercy",
+        "top_n": 3,
+    },
+)
 
-run("top_n: 5", "POST", "/match-ayahs",
-    body={"entry": "I feel anxious and stressed about everything in my life right now", "top_n": 5},
-    note="Should return exactly 5 matches")
+run(
+    "Emotion: anger at Allah",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I'm angry with Allah, I don't understand why He keeps testing me like this, it feels so unfair",
+        "top_n": 3,
+    },
+)
 
-# ── UPDATE EMOTION ───────────────────────────────────────────────
+run(
+    "Emotion: trauma flashback",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "Memories keep coming back from what happened, I feel scared in my own body and I can't sleep at night",
+        "top_n": 3,
+    },
+)
+
+# Mixed / ambiguous feelings
+run(
+    "Emotion: mixed — sad and grateful",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I'm sad about what I lost, but also strangely grateful that Allah protected me from what I couldn't see",
+        "top_n": 3,
+    },
+)
+
+run(
+    "Emotion: mixed — stressed and hopeful",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I'm stressed and overwhelmed with responsibilities, but deep down I still have hope that Allah will make a way out",
+        "top_n": 3,
+    },
+)
+
+# Edge language / slang / short entries
+run(
+    "Emotion: short — one‑liner sad",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "Today just hurt.",
+        "top_n": 3,
+    },
+)
+
+run(
+    "Emotion: slang — anxious",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "Lowkey freaking out about everything, my brain won't shut up and my heart is racing",
+        "top_n": 3,
+    },
+)
+
+run(
+    "Emotion: vague but heavy",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I don't even know what I'm feeling anymore, it's just this heavy cloud over me all the time",
+        "top_n": 3,
+    },
+)
+
+# LLM / fallback behaviour
+run(
+    "LLM fallback — super vague",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "Today was a day. I just sat there. Things happened. I don't know.",
+        "top_n": 3,
+    },
+    note="No strong emotion words — should fall back to generic comfort / safe verses",
+)
+
+# top_n behaviour
+run(
+    "top_n: 1 (sad)",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I feel sad and lost today",
+        "top_n": 1,
+    },
+)
+
+run(
+    "top_n: 5 (stressed)",
+    "POST",
+    "/match-ayahs",
+    body={
+        "entry": "I feel anxious and stressed about everything in my life right now",
+        "top_n": 5,
+    },
+)# ── UPDATE EMOTION ───────────────────────────────────────────────
 print("\n── UPDATE EMOTION ──")
 run("Update emotion — valid", "POST", "/update-emotion",
     body={"entry_id": 0, "emotion_after": "peaceful"})
@@ -181,3 +362,5 @@ print(f"  Passed: {out['passed']} ✅")
 print(f"  Failed: {out['failed']} ❌")
 print(f"\n  Results saved to: quran_test_results.json")
 print("="*60 + "\n")
+
+# ── MATCH AYAHS ─────────────────────────────────────────────────

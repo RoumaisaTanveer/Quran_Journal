@@ -19,144 +19,80 @@ INCLUDE_CUTOFF = 0.28
 # Prevents ambiguous ayahs from polluting emotion pools.
 MARGIN_CUTOFF  = 0.03
 
-# ── Anchor Sentences ──────────────────────────────────────────────────────────
-# These are the SPECIFICATION of what each emotion means in this app.
-# Each anchor = "an ayah I would want to read if I felt this emotion."
-# Multiple anchors per emotion = multiple facets of what comfort looks like.
-#
-# Tuning guide:
-#   - Add anchors if a real ayah keeps getting wrong label
-#   - Remove anchors if a pool is over-assigning (too many ayahs, wrong quality)
-#   - Anchors should sound like Quranic themes, not user journal entries
+# ── Anchor fixes ──────────────────────────────────────────────────────────────
 
-ANCHORS: dict[str, list[str]] = {
+ANCHORS["sad"] = [
+    "My heart is heavy with grief and sorrow, Allah sees my pain and does not abandon me",
+    "I have been crying and feel empty inside, Allah is near to those whose hearts are broken",
+    "The pain I carry feels unbearable, but Allah promises ease will come after hardship",
+    "I miss someone and my heart aches, Allah comforts those who grieve and does not forget them",
+    "I feel hopeless and low, but Allah's mercy is greater than any sadness I carry",
+    "Even in my darkest moment of sadness, Allah is with me and my tears are not wasted",
+]
 
-    "sad": [
-        "Allah is close to those whose hearts are broken and heavy with sorrow",
-        "He knows your grief and your tears are not wasted — ease will come after hardship",
-        "Do not lose hope in the mercy of Allah; He is the Most Merciful",
-        "We do indeed know how your heart is distressed — you are not alone in your pain",
-        "Your suffering reaches Allah and He is near to those who are patient in grief",
-        "After every hardship Allah brings relief; He does not burden a soul beyond its capacity",
-    ],
+ANCHORS["reflective"] = [
+    "I find myself pausing to think about the deeper meaning and purpose of my life",
+    "Looking back on my journey so far and wondering what it all means and where I am headed",
+    "I want to understand myself better and think about what truly matters in this life",
+    "Sitting quietly and contemplating my choices, my faith, and my relationship with Allah",
+    "There is wisdom I am searching for, a deeper understanding of my own soul and existence",
+    "I feel drawn inward today, thinking about who I am and who I want to become",
+]
 
-    "anxious": [
-        "Do not fear, for Allah is with you; He will calm your heart and ease your worry",
-        "Put your trust in Allah — He is sufficient for the one who trusts in Him",
-        "Verily with hardship comes ease; Allah does not abandon those who call on Him",
-        "Allah calms the hearts of believers with His remembrance — seek refuge in Him",
-        "Do not grieve — truly Allah is with those who are patient and trust His plan",
-        "Cast your burden on Allah; He knows what is hidden and what is manifest",
-    ],
+ANCHORS["tired"] = [
+    "I am completely exhausted and drained, I have nothing left to give today",
+    "My body and soul are worn out, I need Allah's mercy and gentleness right now",
+    "I feel so depleted I cannot continue, I need rest and Allah's strength to carry on",
+    "Everything feels heavy and I am running on empty, Allah knows how tired I truly am",
+    "I have been striving so hard for so long, I am weary and need Allah to lighten my burden",
+    "My energy is gone and I feel burnt out, Allah is gentle with those who are exhausted",
+]
 
-    "stressed": [
-        "Indeed with hardship there is ease — Allah promises relief to those who are burdened",
-        "Allah does not burden a soul beyond what it can bear — He is gentle with His servants",
-        "When you are overwhelmed, turn to Allah alone; He is the reliever of distress",
-        "Seek help through patience and prayer — Allah is with those who are steadfast",
-        "Your Lord has not forsaken you; relief is coming even when the burden feels unbearable",
-        "Allah is the best of planners; trust Him when you cannot see the way forward",
-    ],
+ANCHORS["peaceful"] = [
+    "My heart feels calm and still, I am at rest in the remembrance of Allah",
+    "I feel a deep inner tranquility today, a quietness that comes from trusting Allah",
+    "There is no fear or worry in my heart right now, just stillness and gratitude",
+    "I feel settled and at ease, my soul is at peace with what Allah has given me",
+    "This moment feels serene and gentle, my heart is soft and content with Allah",
+    "A beautiful calmness has come over me, the kind of peace only Allah can give",
+]
 
-    "lonely": [
-        "We are nearer to him than his jugular vein — Allah is always with you, closer than you know",
-        "When you feel unseen and alone, know that Allah sees you and is never far",
-        "Allah is the companion of those who have no companion — you are never truly alone",
-        "Call upon Me and I will respond to you — Allah hears you even in your loneliest moment",
-        "He is with you wherever you are; His presence fills every place of solitude",
-        "Even when no one else sees your pain, Allah sees it and He is sufficient for you",
-    ],
+ANCHORS["heartbroken"] = [
+    "Someone I trusted broke my heart and I feel shattered inside from their betrayal",
+    "I loved someone and they hurt me deeply, my heart is in pieces and I cannot let go",
+    "The pain of betrayal feels unbearable, I trusted them and they destroyed that trust",
+    "My heart is broken by someone I cared for, I feel wounded and cannot move on easily",
+    "I gave someone everything and they left me broken, Allah alone can heal this wound",
+    "The grief of losing someone I loved is overwhelming, only Allah can mend my broken heart",
+]
 
-    "heartbroken": [
-        "Allah is with those whose hearts are broken by betrayal and loss — He heals what is shattered",
-        "Do not despair — Allah is the mender of broken hearts and the restorer of hope",
-        "Your pain from being hurt and betrayed is seen by Allah who is the Most Just",
-        "Turn to Allah when your heart is broken; He is the only one who can truly heal you",
-        "Allah does not let sincere love go to waste; He sees the hurt in your heart",
-        "After betrayal and heartbreak, Allah remains — He is nearer than those who left",
-    ],
+ANCHORS["confused"] = [
+    "I do not know which direction to take in life and feel completely lost inside",
+    "I am unclear about my path forward and need Allah's guidance and light in my confusion",
+    "Everything feels uncertain and I do not know what to do or which choice is right",
+    "I feel spiritually and emotionally lost, searching for clarity and direction from Allah",
+    "My mind is full of doubts and I cannot see clearly, I need Allah to show me the way",
+    "I feel stuck and directionless, not knowing what Allah wants for me or which way to go",
+]
 
-    "angry": [
-        "Those who control their anger and pardon others — Allah loves those who do good",
-        "Seek refuge in Allah from anger — He is the patient one and rewards patience",
-        "Do not let injustice make you transgress; Allah sees everything and will judge rightly",
-        "Return evil with good; Allah is with those who are patient in the face of wrong",
-        "Respond to harm with forgiveness — the patient shall inherit great reward",
-        "Allah is just and He does not let injustice go unaddressed — trust His judgment",
-    ],
+# ── New pattern exclusions ─────────────────────────────────────────────────────
+EXCLUDE_PATTERNS.append(("kaf ha ya", "muqatta'at opener — not comforting"))
+EXCLUDE_PATTERNS.append(("warn men of the day", "warning/punishment framing"))
+EXCLUDE_PATTERNS.append(("do not lose heart or appeal for peace when you have gained", "battle strategy"))
+EXCLUDE_PATTERNS.append(("we are utterly ruined", "despair framing"))
+EXCLUDE_PATTERNS.append(("we are ruined", "despair framing"))
+EXCLUDE_PATTERNS.append(("his face darkens", "rebuke/negative framing"))
+EXCLUDE_PATTERNS.append(("why do you laugh rather than weep", "rebuke framing"))
+EXCLUDE_PATTERNS.append(("follow what is revealed to you", "prophet-specific address"))
+EXCLUDE_PATTERNS.append(("aware as to who your enemies are", "enemy framing"))
 
-    "tired": [
-        "Allah does not burden a soul beyond what it can bear — rest is permitted in His mercy",
-        "Even the prophets grew weary; be gentle with yourself — Allah sees your exhaustion",
-        "Your Lord knows your fatigue; He does not waste the effort of those who strive",
-        "Come to Me all who are weary and burdened — Allah's mercy restores the tired soul",
-        "Allah is gentle with those who are drained; your weakness does not diminish your worth",
-        "He gives rest to those who are exhausted and strength to those who have none left",
-    ],
-
-    "hopeful": [
-        "Do not despair of the mercy of Allah — He forgives all sins and brings what is good",
-        "Indeed with difficulty comes ease — Allah's promise is true and His timing is perfect",
-        "Allah answers the call of the one who calls on Him in hope and trust",
-        "Your Lord will give you and you will be satisfied — trust in His generous plan",
-        "Whoever trusts in Allah, He is sufficient for them — beautiful outcomes await",
-        "The believer's hope in Allah is never wasted; He is the best of those relied upon",
-    ],
-
-    "grateful": [
-        "If you are grateful, I will surely increase you in blessings — Allah rewards thankfulness",
-        "Remember Me and I will remember you; give thanks to Me and do not be ungrateful",
-        "All blessings come from Allah alone — count His favours and you cannot number them",
-        "He who is grateful, his gratitude is for his own soul — thankfulness brings more",
-        "Alhamdulillah — all praise belongs to Allah who created and blessed and guided us",
-        "This blessing is from My Lord to test whether I am grateful — and gratitude multiplies",
-    ],
-
-    "confused": [
-        "Guide us to the straight path — Allah alone gives clarity to those who are lost",
-        "Allah is the light of the heavens and the earth; He guides whom He wills to His light",
-        "Put your trust in Allah and He will clarify your affairs and guide your heart",
-        "Ask Allah for guidance — He answers the one who is confused and seeks His direction",
-        "When you do not know which way to go, pray Istikhara and trust Allah's wisdom",
-        "Your Lord has not forsaken you — He will guide you even through the deepest confusion",
-    ],
-
-    "peaceful": [
-        "Verily in the remembrance of Allah do hearts find rest and tranquility",
-        "Those who believe and whose hearts find rest in the remembrance of Allah",
-        "Allah grants peace and contentment to the hearts of those who trust in Him",
-        "The righteous shall have no fear nor shall they grieve — they are at peace with Allah",
-        "Peace be upon you — you are in the care of the Most Merciful, the Most Peaceful",
-        "He it is who sent down serenity into the hearts of the believers to increase their faith",
-    ],
-
-    "happy": [
-        "This is from the bounty of my Lord — joy and happiness are gifts from Allah",
-        "Allah makes the righteous glad and fills their hearts with joy and contentment",
-        "The believers shall have glad tidings — their happiness is multiplied by Allah",
-        "Say: In the bounty of Allah and His mercy — in that let them rejoice",
-        "Alhamdulillah for this joy — every good thing comes from Allah and returns to Him",
-        "Those who believe and do righteous deeds — for them is happiness and a beautiful return",
-    ],
-
-    "content": [
-        "Whoever is content with what Allah has given him will find true peace and sufficiency",
-        "Allah is pleased with those who are pleased with His decree — this is the highest station",
-        "True richness is the richness of the soul, not of possessions — contentment is a gift",
-        "Be satisfied with what Allah has apportioned for you — He gives what is best",
-        "The one who trusts Allah's plan and accepts His decree lives with a contented heart",
-        "Allah is sufficient for the one who is content with Him — He is the best provider",
-    ],
-
-    "reflective": [
-        "Do they not reflect? — Allah invites those who think deeply to understand His signs",
-        "In the creation of the heavens and the earth there are signs for those who reflect",
-        "Those who remember Allah standing, sitting, and lying down and reflect on His creation",
-        "Perhaps you will reflect — life's moments are invitations to return to deeper meaning",
-        "He gives wisdom to whom He wills — the one who ponders gains understanding",
-        "Look and reflect on the signs around you — Allah reveals Himself to those who contemplate",
-    ],
-}
+# ── Run ────────────────────────────────────────────────────────────────────────
+df = main(
+    input_csv="/content/quran_emotion_tagged_clean.csv",
+    output_csv="/content/quran_emotion_retagged_v3.csv",
+    include_cutoff=0.22,   # lower slightly to rescue sad/heartbroken pools
+    margin_cutoff=0.04,
+)
 
 # ── Hard EXCLUDE patterns ─────────────────────────────────────────────────────
 # Ayahs matching ANY of these patterns are excluded regardless of score.
